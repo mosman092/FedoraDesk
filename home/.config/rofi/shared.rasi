@@ -1,0 +1,125 @@
+/*  Shared design system for every rofi menu — Catppuccin Mocha.
+ *
+ *  Layout: a fullscreen dimmed overlay with the visible card (`mainbox`)
+ *  centered inside it.  The dim area is built from four invisible buttons
+ *  bound to kb-cancel, so a left-click anywhere outside the card closes
+ *  the menu (right-click closes too, via kb-cancel in config.rasi).
+ *
+ *  Each menu theme imports this and overrides only:
+ *    * { accent: ...; }        menu accent colour
+ *    mainbox { width: ...; }   card width
+ *    listview { lines/columns }
+ */
+
+* {
+    /* palette */
+    base:     #1e1e2e;
+    mantle:   #181825;
+    crust:    #11111b;
+    surface0: #313244;
+    surface1: #45475a;
+    surface2: #585b70;
+    overlay0: #6c7086;
+    text:     #cdd6f4;
+    subtext:  #a6adc8;
+    blue:     #89b4fa;
+    lavender: #b4befe;
+    mauve:    #cba6f7;
+    teal:     #94e2d5;
+    green:    #a6e3a1;
+    yellow:   #f9e2af;
+    peach:    #fab387;
+    red:      #f38ba8;
+
+    accent:   @blue;
+    dim:      rgba(17, 17, 27, 0.40);
+
+    background-color: transparent;
+    text-color:       @text;
+    font:             "Adwaita Sans 12";
+}
+
+window {
+    fullscreen:       true;
+    transparency:     "real";
+    background-color: @dim;
+    children:         [ "overlayv" ];
+}
+overlayv { orientation: vertical;   children: [ "button-dim-n", "overlayh", "button-dim-s" ]; }
+overlayh { orientation: horizontal; expand: false; children: [ "button-dim-w", "mainbox", "button-dim-e" ]; }
+button-dim-n { expand: true; action: "kb-cancel"; cursor: default; }
+button-dim-s { expand: true; action: "kb-cancel"; cursor: default; }
+button-dim-w { expand: true; action: "kb-cancel"; cursor: default; }
+button-dim-e { expand: true; action: "kb-cancel"; cursor: default; }
+
+/* the card */
+mainbox {
+    expand:           false;
+    width:            640px;
+    background-color: @base;
+    border:           1px;
+    border-color:     @surface1;
+    border-radius:    10px;
+    padding:          18px;
+    spacing:          12px;
+    children:         [ "inputbar", "listview", "message" ];
+}
+
+inputbar {
+    spacing:          10px;
+    padding:          10px 14px;
+    border:           1px;
+    border-color:     @surface0;
+    border-radius:    8px;
+    background-color: @mantle;
+    children:         [ "prompt", "entry" ];
+}
+prompt {
+    padding:          3px 11px;
+    border-radius:    6px;
+    background-color: @surface0;
+    text-color:       @accent;
+    font:             "Adwaita Sans Bold 11";
+    vertical-align:   0.5;
+}
+entry {
+    placeholder:       "Type to search…";
+    placeholder-color: @overlay0;
+    cursor-color:      @accent;
+    vertical-align:    0.5;
+}
+
+listview {
+    fixed-height: true;
+    lines:        10;
+    scrollbar:    false;
+    cycle:        true;
+    spacing:      2px;
+}
+
+element {
+    padding:       9px 12px;
+    spacing:       10px;
+    border-radius: 6px;
+    cursor:        pointer;
+}
+element normal    normal { background-color: transparent; text-color: @text; }
+element alternate normal { background-color: transparent; text-color: @text; }
+element normal    active { background-color: transparent; text-color: @accent; }
+element alternate active { background-color: transparent; text-color: @accent; }
+element normal    urgent { background-color: transparent; text-color: @red; }
+element alternate urgent { background-color: transparent; text-color: @red; }
+element selected  normal { background-color: @surface0;   text-color: @text; }
+element selected  active { background-color: @surface0;   text-color: @accent; }
+element selected  urgent { background-color: @surface0;   text-color: @red; }
+element-icon { size: 1.2em; vertical-align: 0.5; cursor: inherit; }
+element-text { vertical-align: 0.5; cursor: inherit; }
+
+/* footer hint bar (menus that pass -mesg) */
+message { padding: 2px 4px 0px; }
+textbox {
+    text-color:       @subtext;
+    font:             "Adwaita Sans 10";
+    vertical-align:   0.5;
+    horizontal-align: 0.5;
+}

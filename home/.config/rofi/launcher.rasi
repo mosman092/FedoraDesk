@@ -1,0 +1,32 @@
+/* App launcher — icon grid */
+@import "shared"
+
+* { accent: @blue; }
+
+mainbox { width: 780px; padding: 20px; spacing: 16px; }
+
+prompt { enabled: false; }
+entry  { placeholder: "Search apps…"; }
+inputbar { padding: 12px 18px; }
+
+listview {
+    columns:       4;
+    lines:         4;
+    fixed-columns: true;
+    spacing:       6px;
+}
+
+element {
+    orientation:   vertical;
+    padding:       16px 8px;
+    spacing:       10px;
+    border-radius: 8px;
+}
+element-icon {
+    size:             3em;
+    horizontal-align: 0.5;
+}
+element-text {
+    horizontal-align: 0.5;
+    font:             "Adwaita Sans 10";
+}

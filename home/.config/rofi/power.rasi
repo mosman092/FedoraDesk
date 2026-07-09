@@ -1,0 +1,23 @@
+/* Power menu (and its confirm dialog — script overrides lines to 2) */
+@import "shared"
+
+* { accent: @red; }
+
+mainbox { width: 340px; spacing: 10px; }
+
+inputbar {
+    border:           0px;
+    background-color: transparent;
+    padding:          4px 6px 0px;
+    children:         [ "prompt" ];
+}
+prompt {
+    enabled:          true;
+    background-color: transparent;
+    padding:          0px;
+    text-color:       @subtext;
+    font:             "Adwaita Sans Bold 11";
+}
+
+listview { lines: 5; spacing: 4px; }
+element  { padding: 13px 16px; border-radius: 7px; }

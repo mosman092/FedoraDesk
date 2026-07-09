@@ -1,0 +1,11 @@
+/* Keybinding cheatsheet */
+@import "shared"
+
+* { accent: @teal; }
+
+mainbox  { width: 860px; }
+prompt   { enabled: false; }
+entry    { placeholder: "Filter shortcuts…"; }
+listview { lines: 16; spacing: 1px; }
+element  { padding: 7px 12px; }
+element-text { font: "Adwaita Mono 11"; }

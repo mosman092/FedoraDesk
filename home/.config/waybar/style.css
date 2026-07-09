@@ -1,0 +1,168 @@
+/* Catppuccin Mocha — Waybar "floating islands": every module is its own capsule */
+@define-color base    #1e1e2e;
+@define-color mantle  #181825;
+@define-color crust   #11111b;
+@define-color surface #313244;
+@define-color surface1 #45475a;
+@define-color text    #cdd6f4;
+@define-color subtext #a6adc8;
+@define-color blue    #89b4fa;
+@define-color lavender #b4befe;
+@define-color mauve   #cba6f7;
+@define-color green   #a6e3a1;
+@define-color teal    #94e2d5;
+@define-color peach   #fab387;
+@define-color red     #f38ba8;
+@define-color yellow  #f9e2af;
+@define-color pink    #f5c2e7;
+
+* {
+    font-family: "Adwaita Sans", "Noto Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 0;
+}
+
+window#waybar {
+    background: transparent;
+    color: @text;
+}
+
+/* groups are invisible — the modules float on their own */
+.modules-left,
+.modules-center,
+.modules-right {
+    background: transparent;
+    padding: 0;
+}
+
+/* every module = its own floating capsule */
+#custom-launcher,
+#custom-clipboard,
+#custom-keybinds,
+#custom-emoji,
+#custom-theme,
+#custom-nightlight,
+#custom-power,
+#idle_inhibitor,
+#pulseaudio,
+#network,
+#cpu,
+#memory,
+#temperature,
+#backlight,
+#battery,
+#custom-battery,
+#clock,
+#mode,
+#tray,
+#workspaces {
+    background: alpha(@base, 0.92);
+    border: 1px solid alpha(@surface1, 0.5);
+    border-radius: 8px;
+    padding: 3px 11px;
+    margin: 3px 2px;
+    color: @text;
+}
+
+/* ── left: launcher is a bold blue button ── */
+#custom-launcher {
+    background: alpha(@blue, 0.92);
+    border-color: transparent;
+    color: @crust;
+    font-size: 15px;
+    padding: 3px 13px;
+    margin-left: 0;
+}
+#custom-launcher:hover { background: @lavender; }
+
+/* workspaces: one capsule holding pill dots */
+#workspaces { padding: 3px 4px; }
+#workspaces button {
+    background: transparent;
+    color: @subtext;
+    border-radius: 6px;
+    padding: 1px 9px;
+    margin: 0 1px;
+}
+#workspaces button.focused,
+#workspaces button.visible {
+    background: @blue;
+    color: @crust;
+}
+#workspaces button.urgent { background: @red; color: @crust; }
+#workspaces button:hover  { background: alpha(@blue, 0.3); color: @text; box-shadow: none; }
+
+#mode { color: @peach; border-color: alpha(@peach, 0.5); }
+
+/* ── left: clock capsule sits next to the launcher ── */
+#clock {
+    background: alpha(@mantle, 0.95);
+    border: 1px solid alpha(@lavender, 0.45);
+    color: @lavender;
+    font-weight: 900;
+    padding: 3px 14px;
+}
+
+/* ── focused window title: small subtle label after the workspaces ── */
+#window {
+    color: @subtext;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 12px;
+    padding: 0 6px;
+    margin-left: 2px;
+}
+window#waybar.empty #window { margin: 0; padding: 0; }
+
+/* ── right: tool buttons (accent-tinted capsules) ── */
+#custom-keybinds { color: @teal; font-size: 14px; }
+#custom-keybinds:hover { background: alpha(@teal, 0.25); }
+#custom-emoji { color: @yellow; font-size: 14px; }
+#custom-emoji:hover { background: alpha(@yellow, 0.25); }
+#custom-theme { color: @lavender; font-size: 14px; }
+#custom-theme:hover { background: alpha(@lavender, 0.25); }
+#custom-clipboard { color: @mauve; font-size: 14px; }
+#custom-clipboard:hover { background: alpha(@mauve, 0.25); }
+#custom-nightlight { color: @subtext; font-size: 14px; }
+#custom-nightlight.on { color: @peach; border-color: alpha(@peach, 0.6); }
+#custom-nightlight:hover { background: alpha(@peach, 0.25); }
+#idle_inhibitor { color: @subtext; }
+#idle_inhibitor.activated { color: @peach; border-color: alpha(@peach, 0.6); }
+
+/* status capsules: colored icon + text */
+#cpu         { color: @peach; }
+#memory      { color: @mauve; }
+#temperature { color: @yellow; }
+#temperature.critical { color: @red; border-color: @red; }
+#backlight   { color: @yellow; }
+#pulseaudio  { color: @teal; }
+#pulseaudio.muted { color: @subtext; }
+#network     { color: @green; }
+#network.disconnected { color: @red; border-color: alpha(@red, 0.6); }
+#battery,
+#custom-battery { color: @green; }
+#battery.warning,  #custom-battery.warning  { color: @yellow; border-color: alpha(@yellow, 0.6); }
+#battery.critical, #custom-battery.critical { color: @red; border-color: @red; }
+#battery.charging, #custom-battery.charging { color: @green; }
+
+#tray { padding: 3px 10px; }
+
+/* power: bold red button at the corner */
+#custom-power {
+    background: alpha(@red, 0.92);
+    border-color: transparent;
+    color: @crust;
+    font-size: 14px;
+    padding: 3px 14px;
+    margin-right: 0;
+}
+#custom-power:hover { background: @pink; }
+
+tooltip {
+    background: @mantle;
+    border: 1px solid @blue;
+    border-radius: 8px;
+    color: @text;
+}
+tooltip label { color: @text; }

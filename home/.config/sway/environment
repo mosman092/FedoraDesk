@@ -1,0 +1,5 @@
+# Qt apps follow the desktop portal (dark/light switches live)
+QT_QPA_PLATFORMTHEME=xdgdesktopportal
+TERMINAL=foot
+BROWSER=brave-origin
+EDITOR=nvim

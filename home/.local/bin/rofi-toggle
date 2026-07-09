@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Toggle-aware rofi launcher.  Usage: rofi-toggle <menu-id> <command...>
+#   same id while open  -> closes it (press twice = open then close)
+#   different id        -> closes the open one, opens the new one
+#   nothing open        -> opens it
+set -u
+id="$1"; shift
+state="/run/user/$(id -u)/rofi-active"
+
+if pgrep -x rofi >/dev/null 2>&1; then
+  cur=$(cat "$state" 2>/dev/null || true)
+  pkill -x rofi
+  for _ in $(seq 1 40); do pgrep -x rofi >/dev/null || break; sleep 0.03; done
+  if [ "$cur" = "$id" ]; then
+    [ "$(cat "$state" 2>/dev/null || true)" = "$id" ] && rm -f "$state"
+    exit 0
+  fi
+fi
+
+echo "$id" > "$state"
+"$@"
+[ "$(cat "$state" 2>/dev/null || true)" = "$id" ] && rm -f "$state"

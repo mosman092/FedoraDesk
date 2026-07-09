@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Waybar custom battery module: icon + %, tooltip shows health, cycles, and the
+# CURRENT tuned power profile (Power Saver / Balanced / Performance).
+# (This laptop's driver exposes no current_now/power_now, so no watts/time.)
+set -u
+bat=/sys/class/power_supply/BAT0
+r(){ cat "$bat/$1" 2>/dev/null; }
+
+cap=$(r capacity); cap=${cap:-0}
+status=$(r status)
+cf=$(r charge_full); cfd=$(r charge_full_design); cyc=$(r cycle_count)
+health="?"; if [ -n "$cf" ] && [ -n "$cfd" ] && [ "${cfd:-0}" -gt 0 ] 2>/dev/null; then health=$(( 100*cf/cfd )); fi
+
+# current power profile -> friendly name (read the state file; no ~0.2s dbus call)
+tp=$(cat /etc/tuned/active_profile 2>/dev/null)
+case "$tp" in
+  powersave)              prof="Power Saver";;
+  balanced|balanced-*)    prof="Balanced";;
+  *performance*)          prof="Performance";;
+  "")                     prof="?";;
+  *)                      prof="$tp";;
+esac
+
+# Font Awesome glyphs (generated at runtime so editors can't strip them)
+bolt=$(printf ''); plug=$(printf '')
+i100=$(printf ''); i75=$(printf ''); i50=$(printf ''); i25=$(printf ''); i0=$(printf '')
+case "$status" in
+  Charging)            icon=$bolt ;;
+  Full|"Not charging") icon=$plug ;;
+  *) if   [ "$cap" -ge 90 ]; then icon=$i100
+     elif [ "$cap" -ge 65 ]; then icon=$i75
+     elif [ "$cap" -ge 40 ]; then icon=$i50
+     elif [ "$cap" -ge 15 ]; then icon=$i25
+     else                          icon=$i0; fi ;;
+esac
+
+class="good"
+[ "$cap" -le 30 ] && class="warning"
+[ "$cap" -le 15 ] && class="critical"
+[ "$status" = "Charging" ] && class="charging"
+
+st=$(printf '%s' "$status" | tr 'A-Z' 'a-z')
+text="<span font_family='Font Awesome 6 Free' weight='heavy'>${icon}</span>  ${cap}%"
+tip="${cap}%  ·  ${st}  ·  ${health}% health  ·  ${cyc:-?} cycles  ·  Profile: ${prof}"
+printf '{"text":"%s","tooltip":"%s","class":"%s","percentage":%s}\n' "$text" "$tip" "$class" "$cap"

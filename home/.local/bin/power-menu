@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Power menu: FA icons via pango markup, confirm for destructive actions
+set -euo pipefail
+fa() { printf "<span font_family='Font Awesome 6 Free' weight='heavy' foreground='%s'>&#x%s;</span>   %s" "$1" "$2" "$3"; }
+
+chosen=$( printf '%s\n' \
+  "$(fa '#89b4fa' f023 'Lock')" \
+  "$(fa '#cba6f7' f186 'Suspend')" \
+  "$(fa '#a6adc8' f2f5 'Log out')" \
+  "$(fa '#fab387' f021 'Reboot')" \
+  "$(fa '#f38ba8' f011 'Shut down')" \
+ | rofi -dmenu -i -markup-rows -p "Power" \
+     -theme ~/.config/rofi/power.rasi )
+[ -z "${chosen:-}" ] && exit 0
+
+confirm() {
+  ans=$( printf '%s\n' \
+    "$(fa '#a6e3a1' f00c "Yes, $1")" \
+    "$(fa '#f38ba8' f00d 'Cancel')" \
+   | rofi -dmenu -i -markup-rows -p "Confirm" \
+       -theme ~/.config/rofi/power.rasi -theme-str 'listview { lines: 2; }' )
+  [[ "${ans:-}" == *"Yes,"* ]]
+}
+
+case "$chosen" in
+  *Lock*)        swaylock -f -c 1e1e2e ;;
+  *Suspend*)     systemctl suspend ;;
+  *"Log out"*)   confirm "log out"   && swaymsg exit ;;
+  *Reboot*)      confirm "reboot"    && systemctl reboot ;;
+  *"Shut down"*) confirm "shut down" && systemctl poweroff ;;
+esac

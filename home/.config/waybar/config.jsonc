@@ -1,0 +1,190 @@
+{
+    "layer": "top",
+    "position": "bottom",
+    "height": 36,
+    "spacing": 0,
+    "margin-bottom": 6,
+    "margin-left": 8,
+    "margin-right": 8,
+    "modules-left": [
+        "custom/launcher",
+        "clock",
+        "sway/workspaces",
+        "sway/mode",
+        "sway/window"
+    ],
+    "modules-center": [],
+    "modules-right": [
+        "custom/theme",
+        "custom/nightlight",
+        "idle_inhibitor",
+        "custom/clipboard",
+        "pulseaudio",
+        "network",
+        "cpu",
+        "memory",
+        "temperature",
+        "backlight",
+        "custom/battery",
+        "tray",
+        "custom/power"
+    ],
+    "custom/launcher": {
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>",
+        "tooltip": false,
+        "on-click": "~/.local/bin/rofi-toggle launcher rofi -show drun -theme ~/.config/rofi/launcher.rasi"
+    },
+    "custom/clipboard": {
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>",
+        "tooltip-format": "Clipboard history",
+        "on-click": "~/.local/bin/rofi-toggle clipboard ~/.local/bin/clip-menu"
+    },
+    "custom/nightlight": {
+        "exec": "~/.local/bin/nightlight-status",
+        "return-type": "json",
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'>{}</span>",
+        "interval": 10,
+        "signal": 8,
+        "on-click": "~/.local/bin/nightlight-toggle"
+    },
+    "sway/workspaces": {
+        "disable-scroll": false,
+        "format": "{name}"
+    },
+    "sway/mode": {
+        "format": "<span style='italic'> {}</span>"
+    },
+    "sway/window": {
+        "format": "{title}",
+        "max-length": 45,
+        "tooltip": false,
+        "rewrite": {
+            "": ""
+        }
+    },
+    "clock": {
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  {:%a %d %b   %I:%M:%S %p}",
+        "format-alt": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  {:%I:%M:%S %p}",
+        "interval": 1,
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+    "idle_inhibitor": {
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'>{icon}</span>",
+        "tooltip-format-activated": "Keep-awake ON",
+        "tooltip-format-deactivated": "Keep-awake OFF",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+    "tray": {
+        "spacing": 10,
+        "icon-size": 18
+    },
+    "cpu": {
+        "on-click": "foot -e sh -c 'btop 2>/dev/null || top'",
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  {usage}%",
+        "interval": 3,
+        "tooltip": false
+    },
+    "memory": {
+        "on-click": "foot -e sh -c 'btop 2>/dev/null || top'",
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  {}%",
+        "interval": 5,
+        "tooltip-format": "RAM {used:0.1f}G / {total:0.1f}G"
+    },
+    "temperature": {
+        "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+        "input-filename": "temp1_input",
+        "critical-threshold": 80,
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'>{icon}</span>  {temperatureC}°C",
+        "format-icons": [
+            "",
+            "",
+            ""
+        ],
+        "tooltip": false
+    },
+    "backlight": {
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  {percent}%",
+        "tooltip-format": "Brightness {percent}%\nScroll = adjust   ·   Click = display layout",
+        "on-click": "foot -e bash -c 'nvim ~/.config/sway/config.d/outputs.conf; swaymsg reload'",
+        "on-scroll-up": "~/.local/bin/brightness +5",
+        "on-scroll-down": "~/.local/bin/brightness -5"
+    },
+    "custom/battery": {
+        "exec": "~/.local/bin/battery-status",
+        "return-type": "json",
+        "interval": 30,
+        "signal": 10,
+        "on-click": "~/.local/bin/power-profile"
+    },
+    "battery": {
+        "on-click": "~/.local/bin/power-profile",
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'>{icon}</span>  {capacity}%",
+        "format-charging": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  {capacity}%",
+        "format-plugged": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  {capacity}%",
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "tooltip-format": "{capacity}%  ·  on battery  ·  {health}% health  ·  {cycles} cycles  ·  click: power profile",
+        "tooltip-format-charging": "{capacity}%  ·  charging  ·  {health}% health  ·  {cycles} cycles  ·  click: power profile",
+        "tooltip-format-plugged": "{capacity}%  ·  plugged in  ·  {health}% health  ·  {cycles} cycles  ·  click: power profile",
+        "tooltip-format-full": "{capacity}%  ·  full  ·  {health}% health  ·  {cycles} cycles  ·  click: power profile"
+    },
+    "network": {
+        "interval": 2,
+        "format-alt": "<span font_family='Font Awesome 6 Free' weight='heavy'></span> {bandwidthUpBytes}/s  <span font_family='Font Awesome 6 Free' weight='heavy'></span> {bandwidthDownBytes}/s",
+        "format-wifi": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  {signalStrength}%",
+        "format-ethernet": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  wired",
+        "format-linked": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  no IP",
+        "format-disconnected": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  off",
+        "tooltip-format": "{essid}  ·  {ipaddr}"
+    },
+    "pulseaudio": {
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'>{icon}</span>  {volume}%",
+        "format-muted": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  muted",
+        "format-icons": {
+            "headphone": "",
+            "default": [
+                "",
+                "",
+                ""
+            ]
+        },
+        "on-click": "pavucontrol",
+        "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
+    },
+    "custom/keybinds": {
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>",
+        "tooltip-format": "Keyboard shortcuts",
+        "on-click": "~/.local/bin/rofi-toggle keys ~/.local/bin/keys-menu"
+    },
+    "custom/emoji": {
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>",
+        "tooltip-format": "Emoji picker",
+        "on-click": "~/.local/bin/rofi-toggle emoji ~/.local/bin/emoji-menu"
+    },
+    "custom/theme": {
+        "exec": "~/.local/bin/theme-status",
+        "return-type": "json",
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'>{}</span>",
+        "interval": 10,
+        "signal": 9,
+        "on-click": "~/.local/bin/theme-toggle"
+    },
+    "custom/power": {
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>",
+        "tooltip-format": "Power menu",
+        "on-click": "~/.local/bin/rofi-toggle power ~/.local/bin/power-menu"
+    }
+}

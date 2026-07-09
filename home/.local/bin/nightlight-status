@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Waybar module: warm-light bulb icon, highlighted when wlsunset is on
+icon=$(printf '')
+if pgrep -x wlsunset >/dev/null; then
+  printf '{"text":"%s","class":"on","tooltip":"Night light ON (click to turn off)"}\n' "$icon"
+else
+  printf '{"text":"%s","class":"off","tooltip":"Night light off (click to turn on)"}\n' "$icon"
+fi

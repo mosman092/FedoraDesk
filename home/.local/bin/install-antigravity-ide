@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# Install / update the Google Antigravity IDE (Linux x64) into ~/.local — no sudo.
+# Fedora has no official 2.x RPM, so we use Google's tarball. The download URL is
+# resolved from Antigravity's own releases API (newest first), so this always
+# grabs the latest; pass a tarball URL as $1 to override.
+#
+# Layout: extracts to ~/.local/opt/antigravity-ide, symlinks the launcher to
+# ~/.local/bin/antigravity, and writes a .desktop so it shows in the launcher.
+set -euo pipefail
+
+API="https://antigravity-ide-auto-updater-974169037036.us-central1.run.app/releases"
+BASE="https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable"
+OPT="$HOME/.local/opt/antigravity-ide"
+BIN="$HOME/.local/bin"
+APPS="$HOME/.local/share/applications"
+
+say(){ printf '\033[1;34m::\033[0m %s\n' "$*"; }
+die(){ printf '\033[1;31m!!\033[0m %s\n' "$*" >&2; exit 1; }
+
+# 1. resolve the download URL — $1 override, else newest from the releases API
+url="${1:-}"
+if [ -z "$url" ]; then
+  say "Resolving latest Antigravity IDE from releases API…"
+  read -r ver eid < <(curl -fsSL --compressed "$API" 2>/dev/null \
+    | python3 -c 'import json,sys
+d=json.load(sys.stdin); e=d[0]; print(e["version"], e["execution_id"])') \
+    || die "releases API unreachable — pass the tarball URL as an argument"
+  [ -n "${ver:-}" ] && [ -n "${eid:-}" ] || die "could not parse version from API"
+  url="$BASE/$ver-$eid/linux-x64/Antigravity%20IDE.tar.gz"
+  say "Latest version: $ver"
+fi
+say "Tarball: $url"
+
+# 2. download to a self-cleaning temp dir
+tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+say "Downloading…"
+curl -fL --progress-bar "$url" -o "$tmp/ag.tar.gz" || die "download failed"
+
+# 3. extract into a clean install dir (strip the single top-level folder)
+say "Installing to $OPT…"
+rm -rf "$OPT"; mkdir -p "$OPT"
+if ! tar -xzf "$tmp/ag.tar.gz" -C "$OPT" --strip-components=1 2>/dev/null; then
+  rm -rf "$OPT"; mkdir -p "$OPT"; tar -xzf "$tmp/ag.tar.gz" -C "$OPT"
+fi
+
+# 4. locate the launcher binary and symlink it to ~/.local/bin/antigravity
+bin="$(find "$OPT" -maxdepth 2 -type f -perm -u+x \
+        \( -iname antigravity -o -iname 'antigravity-ide' \) 2>/dev/null | head -1)"
+[ -z "$bin" ] && bin="$(find "$OPT" -maxdepth 1 -type f -perm -u+x -iname '*antigravity*' | head -1)"
+[ -n "$bin" ] || die "couldn't find the Antigravity launcher inside the tarball (look in $OPT)"
+chmod +x "$bin"
+mkdir -p "$BIN"; ln -sfn "$bin" "$BIN/antigravity"
+say "Launcher: $bin"
+
+# 5. desktop entry (use a shipped icon if we can find one)
+icon="$(find "$OPT" -maxdepth 5 -type f \( -iname '*antigravity*.png' -o -ipath '*resources/linux*.png' -o -iname 'code.png' \) 2>/dev/null | head -1)"
+mkdir -p "$APPS"
+cat > "$APPS/antigravity.desktop" <<EOF
+[Desktop Entry]
+Name=Antigravity IDE
+Comment=Google Antigravity agentic IDE
+Exec=$bin %F
+Icon=${icon:-applications-development}
+Type=Application
+Categories=Development;IDE;TextEditor;
+StartupNotify=true
+StartupWMClass=Antigravity
+Terminal=false
+EOF
+command -v update-desktop-database >/dev/null && update-desktop-database "$APPS" 2>/dev/null || true
+
+say "Done — run 'antigravity' or launch 'Antigravity IDE' from the app menu."

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Records clipboard changes (text AND images) into history.
+#
+# Reads the new clipboard content from STDIN, which `wl-paste --watch`
+# pipes in.  We deliberately do NOT call `wl-paste` again here: a nested
+# wl-paste inside the --watch handler can deadlock, which wedges the whole
+# watcher so nothing (text or images) gets recorded afterwards.  Sniffing
+# the bytes on stdin is race-free.
+set -u
+dir="$HOME/.cache/clip-history"
+mkdir -p "$dir"
+
+tmp=$(mktemp)
+cat > "$tmp"
+[ -s "$tmp" ] || { rm -f "$tmp"; exit 0; }
+
+# PNG signature = 89 50 4E 47
+magic=$(head -c4 "$tmp" | od -An -tx1 | tr -d ' \n')
+if [ "$magic" = "89504e47" ]; then
+  id=$(cksum "$tmp" | cut -d' ' -f1)
+  mv -f "$tmp" "$dir/img_$id.png"; touch "$dir/img_$id.png"
+else
+  content=$(cat "$tmp"); rm -f "$tmp"
+  [ -z "${content//[$' \t\n']/}" ] && exit 0     # ignore whitespace-only
+  id=$(printf '%s' "$content" | cksum | tr -d ' ')
+  printf '%s' "$content" > "$dir/txt_$id"; touch "$dir/txt_$id"
+fi
+
+# keep the 200 most-recent entries
+ls -1t "$dir" 2>/dev/null | tail -n +201 | while read -r f; do rm -f "$dir/$f"; done

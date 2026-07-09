@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# Keybinding cheatsheet: parses sway configs live, shows in rofi
+python3 - <<'PY' | rofi -dmenu -i -p "Keys" -theme ~/.config/rofi/keys.rasi
+import glob, re, os
+
+files = ["/etc/sway/config"]
+layers = {}
+for d in ["/usr/share/sway/config.d", "/etc/sway/config.d",
+          os.path.expanduser("~/.config/sway/config.d")]:
+    for f in sorted(glob.glob(d + "/*.conf")):
+        layers[os.path.basename(f)] = f
+files += [layers[k] for k in sorted(layers)]
+
+binds, order = {}, []
+for path in files:
+    try: lines = open(path).read().splitlines()
+    except OSError: continue
+    block_flags = None
+    for ln in lines:
+        s = ln.strip()
+        if block_flags is not None:
+            if s == "}": block_flags = None; continue
+            m = re.match(r"(\S+)\s+(.+)", s)
+            if m and not s.startswith("#"):
+                k = m.group(1)
+                if k not in binds: order.append(k)
+                binds[k] = m.group(2)
+            continue
+        if s.startswith("unbindsym"):
+            k = s.split()[1]; binds.pop(k, None)
+            continue
+        m = re.match(r"bindsym\s+((?:--\S+\s+)*)\{$", s)
+        if m: block_flags = m.group(1); continue
+        m = re.match(r"bindsym\s+(?:--\S+\s+)*(\S+)\s+(.+)", s)
+        if m:
+            k = m.group(1)
+            if k not in binds: order.append(k)
+            binds[k] = m.group(2)
+
+NAMES = [
+    (r"exec \$term$|exec foot$", "Terminal"),
+    (r"rofi -show drun.*", "App launcher"),
+    (r"rofi -show window", "Window switcher"),
+    (r"kill$", "Close window"),
+    (r"clip-menu", "Clipboard history"),
+    (r"power-menu", "Power menu"),
+    (r"keys-menu", "This cheatsheet"),
+    (r"emoji-menu", "Emoji picker"),
+    (r"nightlight-toggle", "Night light on/off"),
+    (r"theme-toggle", "Dark / light mode"),
+    (r"grimshot --notify copy area", "Screenshot region -> clipboard"),
+    (r"grimshot save output", "Screenshot full screen -> file"),
+    (r"grimshot save active", "Screenshot window -> file"),
+    (r"grimshot save area", "Screenshot region -> file"),
+    (r"floating toggle", "Pop window out / back (floating)"),
+    (r"focus mode_toggle", "Focus tiled <-> floating"),
+    (r"fullscreen", "Fullscreen"),
+    (r"splith$", "Split next window horizontally"),
+    (r"splitv$", "Split next window vertically"),
+    (r"layout stacking", "Stack layout"),
+    (r"layout tabbed", "Tabbed layout"),
+    (r"layout toggle split", "Toggle split direction"),
+    (r"focus parent", "Focus parent container"),
+    (r"move scratchpad", "Hide window to scratchpad"),
+    (r"scratchpad show", "Show scratchpad window"),
+    (r"reload", "Reload Sway config"),
+    (r"exec swaynag.*exit", "Exit Sway (logout prompt)"),
+    (r'mode "?resize"?', "Resize mode (arrows, Esc to quit)"),
+    (r"workspace number (\d+)", r"Go to workspace \1"),
+    (r"move container to workspace number (\d+)", r"Move window to workspace \1"),
+    (r"focus left", "Focus left"), (r"focus right", "Focus right"),
+    (r"focus up", "Focus up"), (r"focus down", "Focus down"),
+    (r"move left", "Move window left"), (r"move right", "Move window right"),
+    (r"move up", "Move window up"), (r"move down", "Move window down"),
+    (r"volume-helper.*--increase|set-volume.*%\+", "Volume up"),
+    (r"volume-helper.*--decrease|set-volume.*%-", "Volume down"),
+    (r"volume-helper.*--toggle|set-mute", "Mute toggle"),
+    (r".*brightnessctl.*\+.*|.*brightnessctl.*set \+", "Brightness up"),
+    (r".*brightnessctl.*-.*", "Brightness down"),
+    (r"exec playerctl play-pause", "Play / pause media"),
+    (r"exec playerctl next", "Next track"),
+    (r"exec playerctl previous", "Previous track"),
+    (r"exec firefox", "Browser"),
+    (r"exec thunar", "File manager"),
+    (r'mode "?passthrough"?', "Passthrough mode"),
+]
+def describe(cmd):
+    for pat, name in NAMES:
+        m = re.search(pat, cmd)
+        if m: return m.expand(name) if "\\1" in name else name
+    return cmd[:60]
+
+def pretty(key):
+    for a,b in (("$left","h"),("$down","j"),("$up","k"),("$right","l")):
+        key = key.replace(a,b)
+    key = key.replace("$mod", "Super").replace("Mod1", "Alt").replace("Mod4", "Super")
+    parts = key.split("+")
+    return " + ".join(p.capitalize() if len(p) > 1 else p.upper() for p in parts)
+
+seen = set()
+for k in order:
+    if k in binds and k not in seen:
+        seen.add(k)
+        print(f"{pretty(k):<30} {describe(binds[k])}")
+PY
+exit 0

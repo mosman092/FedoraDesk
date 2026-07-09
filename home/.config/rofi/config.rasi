@@ -1,0 +1,26 @@
+/*  Global rofi config + default theme (window switcher, plain dmenu).
+ *  Menu-specific looks live in launcher / clipboard / emoji / keys / power .rasi
+ */
+@import "shared"
+
+configuration {
+    modes:            "drun,window";
+    show-icons:       true;
+    icon-theme:       "Adwaita";
+    drun-display-format: "{name}";
+    display-drun:     "Apps";
+    display-window:   "Windows";
+    window-format:    "{c}   {t}";
+
+    /* mouse: hover highlights, left click activates, click on the dim
+       overlay (or right-click anywhere) closes — see shared.rasi */
+    hover-select:     true;
+    click-to-exit:    false;
+    kb-cancel:        "Escape,MouseSecondary";
+    me-select-entry:  "";
+    me-accept-entry:  "MousePrimary";
+}
+
+mainbox  { width: 680px; }
+listview { lines: 6; }
+element-icon { size: 1.4em; }

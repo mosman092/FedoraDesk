@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Point Firefox's Arabic-script fallback at Noto Nastaliq Urdu, in every profile.
+# Firefox buckets all Arabic-script (Urdu/Arabic/Persian) into one "ar" langgroup
+# and reads its own font.name-list.*.ar prefs, so the system fontconfig alone
+# isn't enough for Firefox — this sets the prefs via user.js. Idempotent.
+set -u
+
+block='// Urdu Nastaliq for Arabic-script fallback (added by dotfiles)
+user_pref("font.name-list.serif.ar",      "Noto Nastaliq Urdu, Noto Naskh Arabic");
+user_pref("font.name-list.sans-serif.ar", "Noto Nastaliq Urdu, Noto Sans Arabic");
+user_pref("font.name-list.monospace.ar",  "Noto Nastaliq Urdu, Noto Sans Mono");'
+
+found=0
+for base in "$HOME/.config/mozilla/firefox" "$HOME/.mozilla/firefox" \
+            "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox"; do
+  [ -d "$base" ] || continue
+  for prof in "$base"/*/; do
+    [ -d "$prof" ] || continue
+    # a real profile has prefs.js/times.json, or is named *.default*
+    if [ ! -f "${prof}prefs.js" ] && [ ! -f "${prof}times.json" ]; then
+      case "$prof" in *.default*/) : ;; *) continue ;; esac
+    fi
+    ujs="${prof}user.js"
+    if grep -q "font.name-list.sans-serif.ar" "$ujs" 2>/dev/null; then
+      found=1; continue
+    fi
+    printf '%s\n' "$block" >> "$ujs"
+    echo "  Firefox Urdu pref written -> ${prof}user.js"
+    found=1
+  done
+done
+
+if [ "$found" -eq 0 ]; then
+  echo "  No Firefox profile found yet — launch Firefox once, then run: apply-firefox-urdu"
+fi

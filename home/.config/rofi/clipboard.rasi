@@ -1,0 +1,10 @@
+/* Clipboard history */
+@import "shared"
+
+* { accent: @mauve; }
+
+mainbox  { width: 700px; }
+prompt   { enabled: false; }
+entry    { placeholder: "Search clipboard history…"; }
+listview { lines: 8; }
+element  { padding: 10px 12px; }

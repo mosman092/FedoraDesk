@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Waybar status for the theme toggle: shows the icon of the ACTIVE mode.
+#   dark active  -> moon   (click switches to light)
+#   light active -> sun    (click switches to dark)
+if [ "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null)" = "'prefer-dark'" ]; then
+  printf '{"text":"","class":"dark","tooltip":"Dark mode \u2014 click for light"}\n'
+else
+  printf '{"text":"","class":"light","tooltip":"Light mode \u2014 click for dark"}\n'
+fi

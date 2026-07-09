@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Clipboard history picker. Enter = paste (auto-type text / re-copy image).
+# Alt+Return = copy only.  Alt+Delete = clear history.
+set -u
+dir="$HOME/.cache/clip-history"
+[ -d "$dir" ] || { notify-send "Clipboard" "History empty"; exit 0; }
+
+list=$(for f in $(ls -1t "$dir" 2>/dev/null); do
+  case "$f" in
+    img_*) prev="[ Screenshot / image ]   $(date -r "$dir/$f" +%H:%M)" ;;
+    txt_*) prev="$(tr '\n\t' '  ' < "$dir/$f" | sed 's/  */ /g' | cut -c1-120)" ;;
+    *) continue ;;
+  esac
+  printf '%s\t%s\n' "$f" "$prev"
+done)
+[ -z "$list" ] && { notify-send "Clipboard" "History empty"; exit 0; }
+
+sel=$(printf '%s\n' "$list" | rofi -dmenu -i -display-columns 2 -p "Clipboard" \
+        -theme ~/.config/rofi/clipboard.rasi \
+        -mesg "Enter paste  ·  Alt+Enter copy only  ·  Alt+Delete clear history" \
+        -kb-custom-1 "Alt+Return" -kb-custom-2 "Alt+Delete")
+rc=$?
+[ "$rc" -eq 11 ] && { rm -f "$dir"/*; notify-send "Clipboard" "History cleared"; exit 0; }
+[ -z "${sel:-}" ] && exit 0
+f=$(printf '%s' "$sel" | cut -f1)
+[ -f "$dir/$f" ] || exit 0
+
+case "$f" in
+  img_*)
+    wl-copy --type image/png < "$dir/$f" >/dev/null 2>&1
+    notify-send "Clipboard" "Image copied — paste with Ctrl+V"
+    ;;
+  txt_*)
+    wl-copy < "$dir/$f" >/dev/null 2>&1
+    if [ "$rc" -eq 10 ]; then exit 0; fi          # Alt+Return = copy only
+    sleep 0.15                                     # let focus return to the app
+    wtype "$(cat "$dir/$f")"                        # Windows-11 style auto-type
+    ;;
+esac

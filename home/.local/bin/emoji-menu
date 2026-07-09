@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+data="$HOME/.local/share/emoji.txt"
+[ -f "$data" ] || { notify-send "Emoji" "list missing"; exit 1; }
+chosen=$(rofi -dmenu -i -p "Emoji" -theme ~/.config/rofi/emoji.rasi < "$data")
+[ -z "${chosen:-}" ] && exit 0
+emoji=$(printf '%s' "$chosen" | cut -d' ' -f1)
+printf '%s' "$emoji" | wl-copy
+notify-send "Emoji copied" "$emoji   —  paste with Ctrl+V"

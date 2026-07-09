@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Singleton clipboard-history watcher (text + images)
+pkill -f 'wl-paste --watch .*clip-add' 2>/dev/null || true
+sleep 0.2
+exec wl-paste --watch "$HOME/.local/bin/clip-add"
