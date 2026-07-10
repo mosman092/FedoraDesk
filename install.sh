@@ -10,7 +10,7 @@ warn() { printf '\033[1;33m!!\033[0m %s\n' "$*"; }
 rpmostree_install() {
   local pkgs=("$@") out rc miss keep p
   [ "${#pkgs[@]}" -gt 0 ] || return 0
-  out="$(sudo rpm-ostree install --idempotent --apply-live -y "${pkgs[@]}" 2>&1)"; rc=$?
+  out="$(sudo rpm-ostree install --idempotent -y "${pkgs[@]}" 2>&1)"; rc=$?
   printf '%s\n' "$out" | grep -vE '^$' | tail -3
   if [ $rc -ne 0 ]; then
     miss="$(printf '%s\n' "$out" | grep -oiE 'not found:.*' | sed 's/[^:]*: *//' | tr ',' ' ')"
@@ -18,13 +18,10 @@ rpmostree_install() {
       warn "not in repos, skipping: $miss"
       keep=(); for p in "${pkgs[@]}"; do case " $miss " in *" $p "*) ;; *) keep+=("$p");; esac; done
       [ "${#keep[@]}" -gt 0 ] || return 0
-      out="$(sudo rpm-ostree install --idempotent --apply-live -y "${keep[@]}" 2>&1)"; rc=$?
-      pkgs=("${keep[@]}")
+      sudo rpm-ostree install --idempotent -y "${keep[@]}" || warn "layer failed — try manually: ${keep[*]}"
+    else
+      warn "layer failed — try manually: ${pkgs[*]}"
     fi
-  fi
-  if [ $rc -ne 0 ]; then
-    warn "--apply-live failed; layering without live (reboot to finish)…"
-    sudo rpm-ostree install --idempotent -y "${pkgs[@]}" || warn "layer failed — try manually: ${pkgs[*]}"
   fi
 }
 
@@ -90,7 +87,7 @@ fi
 
 if [ "${#need[@]}" -gt 0 ]; then
   mapfile -t need < <(printf '%s\n' "${need[@]}" | sort -u)
-  say "Layering everything in one live transaction: ${need[*]}"
+  say "Layering everything in one transaction (applies on reboot): ${need[*]}"
   if command -v rpm-ostree >/dev/null; then
     rpmostree_install "${need[@]}"
   elif command -v dnf >/dev/null; then
@@ -150,7 +147,6 @@ while IFS= read -r -d '' f; do
   ln -sfn "$f" "$dst"
 done < <(find "$SRC" -type f -print0)
 chmod +x "$HOME"/.local/bin/* 2>/dev/null || true
-command -v fc-cache >/dev/null && fc-cache -f >/dev/null 2>&1 || true
 
 say "Setting GTK dark theme…"
 mkdir -p ~/.config/gtk-3.0 ~/.config/gtk-4.0
@@ -163,10 +159,8 @@ for v in gtk-3.0 gtk-4.0; do
 done
 printf 'gtk-theme-name="Adwaita"\n' > ~/.gtkrc-2.0
 
-if command -v xdg-mime >/dev/null; then
-  say "Applying default applications (MIME, keybindings, env)…"
-  "$HOME/.local/bin/apply-defaults" || warn "apply-defaults reported issues (fine outside a Sway session)"
-fi
+# Default apps + font cache are applied on FIRST BOOT (~/.local/bin/first-run via
+# Sway exec) — nothing is live-applied here; the reboot brings everything up clean.
 
 [ -x "$HOME/.local/bin/apply-firefox-urdu" ] && "$HOME/.local/bin/apply-firefox-urdu" || true
 
@@ -195,8 +189,7 @@ if command -v firewall-cmd >/dev/null; then
 
   fw --permanent --add-port=53317/tcp
   fw --permanent --add-port=53317/udp
-
-  fw --reload
+  # no --reload: permanent rules load on the reboot
 else
   warn "firewall-cmd not found — skipping firewall hardening."
 fi

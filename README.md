@@ -22,14 +22,15 @@ This repo is the single source of truth. `install.sh` **symlinks** everything un
 
 1. Refuses to run as root; primes `sudo` once for the whole run.
 2. **Updates the base system** (`rpm-ostree upgrade`).
-3. Layers only the **missing** packages — including `fastfetch` and **Brave Origin** — in one live `rpm-ostree` transaction.
+3. Layers only the **missing** packages — including `fastfetch` and **Brave Origin** — in one `rpm-ostree` transaction (**not** live-applied; it comes up on the reboot).
 4. Installs **Flatpaks**: Chromium, GNOME Text Editor, **LocalSend**, **Bazaar**, **Flatseal** (plus the system-wide Flathub remote and LocalSend's network/Wayland sandbox permissions).
 5. Installs the self-contained CLI tools (Claude Code, Antigravity) into `~/.local`.
-6. Symlinks configs + scripts, rebuilds the font cache, and sets the GTK dark theme.
-7. Applies default apps / MIME / `$EDITOR` and the Firefox Urdu font pref.
-8. **Hardens the firewall** (see [Security](#security)).
-9. Creates the **`nvim` + `dev` toolboxes** (see [Toolboxes](#toolboxes)).
-10. Reboots.
+6. Symlinks configs + scripts and writes the GTK dark theme.
+7. Sets the firewall rules and the Firefox Urdu font pref.
+8. Creates the **`nvim` + `dev` toolboxes** (see [Toolboxes](#toolboxes)).
+9. **Reboots** — packages, fonts, and defaults all take effect on the clean boot.
+
+**Nothing is applied live.** `install.sh` lays everything down and reboots once into a consistent state — no half-applied packages, no mid-install reloads. The font cache and default-app/MIME setup run **once on the first boot** via `~/.local/bin/first-run` (hooked into Sway's startup).
 
 ## Toolboxes
 
