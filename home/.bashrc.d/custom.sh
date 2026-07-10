@@ -41,44 +41,41 @@ fp() {
 # Fedora Atomic deep clean — asks y/n before EACH step (Enter = yes, n = skip)
 clean() {
   sudo -v || return 1
-  local _r
+  local _r m
   _step() { echo; echo -en "\033[1;34m$1\033[0m  [Y/n] "; read -r _r; [[ -z "$_r" || "$_r" =~ ^[Yy] ]]; }
-  _isbtrfs() { findmnt -no FSTYPE / 2>/dev/null | grep -q btrfs; }
+  # real btrfs on Atomic is mounted at /sysroot; a plain install uses /
+  _btrfs() { local x; for x in /sysroot /; do findmnt -no FSTYPE "$x" 2>/dev/null | grep -q btrfs && { echo "$x"; return 0; }; done; return 1; }
 
-  if _step "[1/9] rpm-ostree cleanup (old base + metadata cruft)?"; then
+  if _step "[1/8] rpm-ostree cleanup (old base + metadata cruft)?"; then
     sudo rpm-ostree cleanup -bm
   fi
 
-  if _step "[2/9] Remove unused Flatpak runtimes?"; then
+  if _step "[2/8] Remove unused Flatpak runtimes?"; then
     flatpak uninstall --user --unused -y 2>/dev/null
     flatpak uninstall --unused -y 2>/dev/null
   fi
 
-  if _step "[3/9] Prune dangling Podman images (keeps your toolboxes)?"; then
-    command -v podman >/dev/null && podman image prune -f
+  if _step "[3/8] Wipe ALL of ~/.cache?"; then
+    find ~/.cache -mindepth 1 -delete 2>/dev/null
   fi
 
-  if _step "[4/9] Delete user cache files older than 30 days?"; then
-    [ -d ~/.cache ] && find ~/.cache -type f -atime +30 -delete
+  if _step "[4/8] Vacuum systemd journals (>1 week / >50M)?"; then
+    sudo journalctl --vacuum-time=1weeks --vacuum-size=50M
   fi
 
-  if _step "[5/9] Vacuum systemd journals (>2 weeks / >200M)?"; then
-    sudo journalctl --vacuum-time=2weeks --vacuum-size=200M
-  fi
-
-  if _step "[6/9] Empty trash?"; then
+  if _step "[5/8] Empty trash?"; then
     gio trash --empty 2>/dev/null || rm -rf ~/.local/share/Trash/* 2>/dev/null
   fi
 
-  if _step "[7/9] Btrfs balance (reclaim mostly-empty chunks)?"; then
-    _isbtrfs && sudo btrfs balance start -dusage=5 -musage=5 / || echo "  not btrfs — skipped."
+  if _step "[6/8] Btrfs balance (reclaim mostly-empty chunks)?"; then
+    m=$(_btrfs) && sudo btrfs balance start -dusage=5 -musage=5 "$m" || echo "  not btrfs — skipped."
   fi
 
-  if _step "[8/9] Btrfs scrub (integrity check)?"; then
-    _isbtrfs && sudo btrfs scrub start -B / || echo "  not btrfs — skipped."
+  if _step "[7/8] Btrfs scrub (integrity check)?"; then
+    m=$(_btrfs) && sudo btrfs scrub start -B "$m" || echo "  not btrfs — skipped."
   fi
 
-  if _step "[9/9] Trim SSD partitions?"; then
+  if _step "[8/8] Trim SSD partitions?"; then
     sudo fstrim -va
   fi
 
