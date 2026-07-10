@@ -22,13 +22,28 @@ This repo is the single source of truth. `install.sh` **symlinks** everything un
 
 1. Refuses to run as root; primes `sudo` once for the whole run.
 2. **Updates the base system** (`rpm-ostree upgrade`).
-3. Layers only the **missing** packages — including `gh`, `fastfetch`, and **Brave Origin** — in one live `rpm-ostree` transaction.
+3. Layers only the **missing** packages — including `fastfetch` and **Brave Origin** — in one live `rpm-ostree` transaction.
 4. Installs **Flatpaks**: Chromium, GNOME Text Editor, **LocalSend**, **Bazaar**, **Flatseal** (plus the system-wide Flathub remote and LocalSend's network/Wayland sandbox permissions).
-5. Installs CLI dev tools (Claude Code, Antigravity).
+5. Installs the self-contained CLI tools (Claude Code, Antigravity) into `~/.local`.
 6. Symlinks configs + scripts, rebuilds the font cache, and sets the GTK dark theme.
 7. Applies default apps / MIME / `$EDITOR` and the Firefox Urdu font pref.
 8. **Hardens the firewall** (see [Security](#security)).
-9. Reboots.
+9. Creates the **`nvim` toolbox** (see [Neovim toolbox](#neovim-toolbox)).
+10. Reboots.
+
+## Neovim toolbox
+
+The host stays lean: **Neovim lives in a `toolbox` container named `nvim`**, not layered on the base OS. `toolbox-setup.sh` creates it and installs **Neovim** plus everything LazyVim expects — `python3-neovim`, `ripgrep`, `fd`, `gcc`/`make`, `git`, `sqlite`, and **Node**/`npm` (for JS LSPs) — all inside that one container.
+
+You never think about the container: a thin wrapper at `~/.local/bin/nvim` transparently runs Neovim **inside `nvim`**, so `nvim file.txt` from your terminal, Thunar, or a Sway keybinding all Just Work. Your `~/.config/nvim` and files are shared with the container, so it's the **same LazyVim setup editing your real files**.
+
+- **Scope:** this container is **only for Neovim**. Want other dev tools? Make a separate toolbox — keep this one clean.
+- **Why:** every host package taxes `rpm-ostree` upgrades. The toolbox is a throwaway `dnf` playground (`toolbox rm nvim` to reset) with **zero** cost to the host.
+- **Node** ships inside it only because Neovim needs it for JS/TS tooling — it never touches the host.
+- **Claude Code / Antigravity CLI** are self-contained binaries in `~/.local` (shared home), so they already work from **both** the host and any toolbox — no wrapper needed.
+- Antigravity **IDE** is a GUI and stays on the host.
+
+Re-run `./toolbox-setup.sh` anytime to (re)build the container.
 
 ## What's inside
 
@@ -38,7 +53,7 @@ This repo is the single source of truth. `install.sh` **symlinks** everything un
 | **Waybar** | `waybar/{config.jsonc,style.css}` — floating-islands bar |
 | **Rofi** | `rofi/*.rasi` — shared design system + launcher / clipboard / emoji / keys / power menus |
 | **Fonts** | `fontconfig/fonts.conf` — CJK / Thai / Bengali / Arabic / **Urdu Nastaliq** / emoji fallback |
-| **Editor** | `nvim/` — LazyVim config |
+| **Editor** | `nvim/` — LazyVim config (Neovim runs in the [`nvim` toolbox](#neovim-toolbox)) |
 | **Apps** | `foot/foot.ini`, `dunst/dunstrc`, `ddcutil/ddcutilrc`, `default-apps.conf` |
 | **Scripts** | `~/.local/bin/*` |
 

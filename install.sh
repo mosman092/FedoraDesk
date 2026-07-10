@@ -50,20 +50,19 @@ fi
 
 declare -A PKG=(
   [rofi]=rofi [waybar]=waybar [foot]=foot [dunst]=dunst [thunar]=Thunar
-  [imv]=imv [xarchiver]=xarchiver [nvim]=neovim [grim]=grim [slurp]=slurp
+  [imv]=imv [mpv]=mpv [xarchiver]=xarchiver [grim]=grim [slurp]=slurp
   [grimshot]=grimshot [wl-copy]=wl-clipboard [wtype]=wtype [swaylock]=swaylock
   [swayidle]=swayidle [brightnessctl]=brightnessctl [ddcutil]=ddcutil
   [wlsunset]=wlsunset [pavucontrol]=pavucontrol [wpctl]=wireplumber
   [notify-send]=libnotify [gsettings]=glib2 [xdg-mime]=xdg-utils [btop]=btop
-  [node]=nodejs [fzf]=fzf [tuned-adm]=tuned [gh]=gh [fastfetch]=fastfetch
+  [tuned-adm]=tuned [fastfetch]=fastfetch
 )
+# Neovim lives in the `nvim` toolbox (toolbox-setup.sh), not the host.
 
 need=()
 for cmd in "${!PKG[@]}"; do
   command -v "$cmd" >/dev/null 2>&1 || need+=("${PKG[$cmd]}")
 done
-command -v nvim >/dev/null 2>&1 || need+=(python3-neovim)
-command -v sqlite3 >/dev/null 2>&1 || need+=(sqlite)
 # don't pipe fc-list|grep -q under pipefail: SIGPIPE => false "missing" => reinstall base fonts => txn fails
 FC="$(fc-list 2>/dev/null)"
 has_font(){ grep -qi "$1" <<<"$FC"; }
@@ -200,6 +199,14 @@ if command -v firewall-cmd >/dev/null; then
   fw --reload
 else
   warn "firewall-cmd not found — skipping firewall hardening."
+fi
+
+# nvim toolbox: Neovim lives here, not on the host (reached via ~/.local/bin/nvim)
+if command -v toolbox >/dev/null; then
+  say "Setting up the 'nvim' toolbox (Neovim + LazyVim deps)…"
+  bash "$DOTFILES/toolbox-setup.sh" || warn "toolbox setup failed — run ./toolbox-setup.sh later"
+else
+  warn "toolbox not found — skipping; the nvim wrapper won't work until the toolbox exists."
 fi
 
 say "Done — rebooting to apply everything."
