@@ -38,11 +38,11 @@ The host stays lean — dev tools live in `toolbox` containers, not layered on t
 | Toolbox | Contains | Reached via |
 |---------|----------|-------------|
 | **`nvim`** | Neovim + LazyVim deps (`python3-neovim`, `ripgrep`, `fd`, `gcc`/`make`, `git`, `sqlite`, `node`/`npm`, `fzf`) | `~/.local/bin/nvim` wrapper |
-| **`dev`** | `git` + `gh` | typing `claude` / `agy` / `antigravity` |
+| **`dev`** | `git` + `gh` | typing `claude` / `agy` |
 
 - **`nvim`** — the `~/.local/bin/nvim` wrapper transparently runs Neovim **inside** the container, so `nvim file.txt` from your terminal, Thunar, or a Sway keybinding all Just Work. `~/.config/nvim` and your files are shared, so it's the **same LazyVim setup editing your real files**. Node is there only for JS/TS LSPs.
-- **`dev`** — `~/.bashrc.d/dev.sh` makes `claude`, `agy`, and `antigravity` run **inside `dev`**, so those AI CLIs use that container's `git`/`gh`. They're self-contained binaries in shared `~/.local`, so the same file runs on host or in the container — the wrapper just picks where.
-- **Antigravity IDE** is a GUI and stays on the host.
+- **`dev`** — `~/.bashrc.d/dev.sh` makes the **CLIs** `claude` and `agy` (Antigravity CLI) run **inside `dev`**, so they use that container's `git`/`gh`. They're self-contained binaries in shared `~/.local`, so the same file runs on host or in the container — the wrapper just picks where.
+- **`antigravity`** is the **GUI IDE** (not a CLI) and launches on the **host** — it is *not* wrapped.
 - Each container is a throwaway `dnf` playground (`toolbox rm <name>` to reset) with **zero** cost to the host base image.
 
 ## What's inside

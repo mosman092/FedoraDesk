@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Create the toolboxes and install their tools. Idempotent.
 #   nvim — Neovim + LazyVim deps (run via ~/.local/bin/nvim)
-#   dev  — git + gh; claude/agy/antigravity run here (via ~/.bashrc.d/dev.sh)
+#   dev  — git + gh; claude/agy (CLIs) run here (via ~/.bashrc.d/dev.sh)
 set -euo pipefail
 
 say()  { printf '\033[1;34m::\033[0m %s\n' "$*"; }
@@ -19,4 +19,4 @@ setup() {  # <name> <packages…>
 setup nvim neovim python3-neovim nodejs npm fzf ripgrep fd-find sqlite gcc make git unzip
 setup dev  git gh
 
-say "Done. 'nvim' runs Neovim; type claude/agy/antigravity to run them in 'dev'."
+say "Done. 'nvim' runs Neovim; type claude/agy to run them in 'dev'."
