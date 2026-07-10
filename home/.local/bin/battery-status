@@ -35,7 +35,14 @@ class="good"
 [ "$cap" -le 15 ] && class="critical"
 [ "$status" = "Charging" ] && class="charging"
 
-st=$(printf '%s' "$status" | tr 'A-Z' 'a-z')
+ac=$(cat /sys/class/power_supply/A{C,DP}*/online 2>/dev/null | grep -m1 1)
+case "$status" in
+  Charging)       st="charging" ;;
+  Discharging)    st="on battery" ;;
+  Full)           st="full" ;;
+  "Not charging") st="plugged in (holding)" ;;
+  *)              st=$([ -n "$ac" ] && echo "plugged in" || printf '%s' "$status" | tr 'A-Z' 'a-z') ;;
+esac
 text="<span font_family='Font Awesome 6 Free' weight='heavy'>${icon}</span>  ${cap}%"
 tip="${cap}%  ·  ${st}  ·  ${health}% health  ·  ${cyc:-?} cycles  ·  Profile: ${prof}"
 printf '{"text":"%s","tooltip":"%s","class":"%s","percentage":%s}\n' "$text" "$tip" "$class" "$cap"
