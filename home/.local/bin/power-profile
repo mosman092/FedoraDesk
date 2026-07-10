@@ -1,14 +1,9 @@
 #!/usr/bin/env bash
-# Cycle the tuned power profile: Power Saver -> Balanced -> Performance -> (wrap).
-# tuned's switch takes ~1.3s, so give feedback INSTANTLY (notify) and apply the
-# switch detached in the background — the click returns immediately instead of
-# blocking on tuned. (tuned allows a logged-in user to switch via polkit.)
 set -u
 
 profiles=(powersave balanced throughput-performance)
 names=("Power Saver" "Balanced" "Performance")
 
-# read active profile from tuned's state file (instant; skips the ~0.2s dbus call)
 cur=$(cat /etc/tuned/active_profile 2>/dev/null)
 [ -n "$cur" ] || cur=$(tuned-adm active 2>/dev/null | sed 's/.*: *//')
 
@@ -16,13 +11,10 @@ idx=-1
 for i in "${!profiles[@]}"; do
   [ "${profiles[$i]}" = "$cur" ] && idx=$i && break
 done
-# not one of our three (e.g. balanced-battery) -> start at Balanced
 if [ "$idx" -lt 0 ]; then next=1; else next=$(( (idx + 1) % ${#profiles[@]} )); fi
 target="${profiles[$next]}"
 
-# 1) instant feedback
 notify-send -t 1500 "Power profile" "${names[$next]}"
 
-# 2) apply the slow switch fully detached, then refresh the battery tooltip
 nohup sh -c "tuned-adm profile '$target' >/dev/null 2>&1; pkill -RTMIN+10 waybar 2>/dev/null" \
   >/dev/null 2>&1 &

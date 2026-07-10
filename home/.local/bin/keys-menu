@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Keybinding cheatsheet: parses sway configs live, shows in rofi
 python3 - <<'PY' | rofi -dmenu -i -p "Keys" -theme ~/.config/rofi/keys.rasi
 import glob, re, os
 

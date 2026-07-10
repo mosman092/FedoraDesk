@@ -1,4 +1,3 @@
-/* App launcher — icon grid */
 @import "shared"
 
 * { accent: @blue; }

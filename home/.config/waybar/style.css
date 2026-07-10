@@ -1,4 +1,4 @@
-/* Catppuccin Mocha — Waybar "floating islands": every module is its own capsule */
+/* ── colors ── */
 @define-color base    #1e1e2e;
 @define-color mantle  #181825;
 @define-color crust   #11111b;
@@ -28,7 +28,6 @@ window#waybar {
     color: @text;
 }
 
-/* groups are invisible — the modules float on their own */
 .modules-left,
 .modules-center,
 .modules-right {
@@ -36,7 +35,6 @@ window#waybar {
     padding: 0;
 }
 
-/* every module = its own floating capsule */
 #custom-launcher,
 #custom-clipboard,
 #custom-keybinds,
@@ -65,7 +63,7 @@ window#waybar {
     color: @text;
 }
 
-/* ── left: launcher is a bold blue button ── */
+/* ── left ── */
 #custom-launcher {
     background: alpha(@blue, 0.92);
     border-color: transparent;
@@ -76,7 +74,6 @@ window#waybar {
 }
 #custom-launcher:hover { background: @lavender; }
 
-/* workspaces: one capsule holding pill dots */
 #workspaces { padding: 3px 4px; }
 #workspaces button {
     background: transparent;
@@ -95,7 +92,6 @@ window#waybar {
 
 #mode { color: @peach; border-color: alpha(@peach, 0.5); }
 
-/* ── left: clock capsule sits next to the launcher ── */
 #clock {
     background: alpha(@mantle, 0.95);
     border: 1px solid alpha(@lavender, 0.45);
@@ -104,7 +100,6 @@ window#waybar {
     padding: 3px 14px;
 }
 
-/* ── focused window title: small subtle label after the workspaces ── */
 #window {
     color: @subtext;
     font-style: italic;
@@ -115,7 +110,7 @@ window#waybar {
 }
 window#waybar.empty #window { margin: 0; padding: 0; }
 
-/* ── right: tool buttons (accent-tinted capsules) ── */
+/* ── right ── */
 #custom-keybinds { color: @teal; font-size: 14px; }
 #custom-keybinds:hover { background: alpha(@teal, 0.25); }
 #custom-emoji { color: @yellow; font-size: 14px; }
@@ -130,7 +125,6 @@ window#waybar.empty #window { margin: 0; padding: 0; }
 #idle_inhibitor { color: @subtext; }
 #idle_inhibitor.activated { color: @peach; border-color: alpha(@peach, 0.6); }
 
-/* status capsules: colored icon + text */
 #cpu         { color: @peach; }
 #memory      { color: @mauve; }
 #temperature { color: @yellow; }
@@ -138,6 +132,8 @@ window#waybar.empty #window { margin: 0; padding: 0; }
 #backlight   { color: @yellow; }
 #pulseaudio  { color: @teal; }
 #pulseaudio.muted { color: @subtext; }
+#pulseaudio.microphone { color: @lavender; }
+#pulseaudio.microphone.source-muted { color: @subtext; }
 #network     { color: @green; }
 #network.disconnected { color: @red; border-color: alpha(@red, 0.6); }
 #battery,
@@ -148,7 +144,6 @@ window#waybar.empty #window { margin: 0; padding: 0; }
 
 #tray { padding: 3px 10px; }
 
-/* power: bold red button at the corner */
 #custom-power {
     background: alpha(@red, 0.92);
     border-color: transparent;

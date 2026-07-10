@@ -20,6 +20,7 @@
         "idle_inhibitor",
         "custom/clipboard",
         "pulseaudio",
+        "pulseaudio#microphone",
         "network",
         "cpu",
         "memory",
@@ -160,9 +161,21 @@
                 ""
             ]
         },
-        "on-click": "pavucontrol",
-        "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+",
+        "tooltip-format": "Volume {volume}%\nClick = mute   ·   Right-click = output devices",
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-click-right": "pavucontrol -t 3",
+        "on-scroll-up": "wpctl set-volume --limit 1.5 @DEFAULT_AUDIO_SINK@ 2%+",
         "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
+    },
+    "pulseaudio#microphone": {
+        "format": "{format_source}",
+        "format-source": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>",
+        "format-source-muted": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>",
+        "tooltip-format": "Microphone {source_volume}%\nClick = mute   ·   Right-click = input devices",
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle",
+        "on-click-right": "pavucontrol -t 4",
+        "on-scroll-up": "wpctl set-volume --limit 1.0 @DEFAULT_AUDIO_SOURCE@ 2%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 2%-"
     },
     "custom/keybinds": {
         "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>",

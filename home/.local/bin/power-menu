@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Power menu: FA icons via pango markup, confirm for destructive actions
 set -euo pipefail
 fa() { printf "<span font_family='Font Awesome 6 Free' weight='heavy' foreground='%s'>&#x%s;</span>   %s" "$1" "$2" "$3"; }
 

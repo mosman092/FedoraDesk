@@ -1,4 +1,4 @@
-/* Power menu (and its confirm dialog — script overrides lines to 2) */
+/* confirm dialog: script overrides lines to 2 */
 @import "shared"
 
 * { accent: @red; }

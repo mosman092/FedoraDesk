@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
-# Dark/light toggle covering GTK4 (portal, live), GTK3 (gsettings+ini), GTK2, Qt (portal, live)
-#
-# IMPORTANT: "Adwaita-dark" is NOT an installed theme on Fedora Sway — naming it in
-# gtk-theme / gtk-theme-name makes GTK3 apps (Thunar) fail to find it and silently
-# fall back to LIGHT. The only reliable dark for GTK3 here is the VALID built-in
-# "Adwaita" theme + gtk-application-prefer-dark-theme=true. So gtk-theme is ALWAYS
-# "Adwaita" and dark/light is driven purely by the prefer-dark flag + color-scheme.
+# gtk-theme must stay "Adwaita" (no "Adwaita-dark" on Fedora — GTK3 silently falls back to light); dark = prefer-dark flag
 set -u
 mkdir -p ~/.config/gtk-3.0 ~/.config/gtk-4.0
 
@@ -16,7 +10,7 @@ else
 fi
 
 gsettings set org.gnome.desktop.interface color-scheme "$scheme"
-gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"   # valid name; dark via prefer-dark
+gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
 
 for v in gtk-3.0 gtk-4.0; do
   printf '[Settings]\ngtk-theme-name=Adwaita\ngtk-application-prefer-dark-theme=%s\ngtk-icon-theme-name=Adwaita\n' \
@@ -24,6 +18,6 @@ for v in gtk-3.0 gtk-4.0; do
 done
 printf 'gtk-theme-name="Adwaita"\n' > ~/.gtkrc-2.0
 
-pkill -RTMIN+9 waybar 2>/dev/null          # refresh the waybar theme icon now
+pkill -RTMIN+9 waybar 2>/dev/null
 pgrep -x thunar >/dev/null && thunar -q 2>/dev/null
 notify-send "Theme" "${mode^} mode enabled"

@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-# Toggle-aware rofi launcher.  Usage: rofi-toggle <menu-id> <command...>
-#   same id while open  -> closes it (press twice = open then close)
-#   different id        -> closes the open one, opens the new one
-#   nothing open        -> opens it
 set -u
 id="$1"; shift
 state="/run/user/$(id -u)/rofi-active"

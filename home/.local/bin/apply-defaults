@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Applies ~/.config/default-apps.conf system-wide: MIME defaults, keybindings, env
 set -u
 conf="$HOME/.config/default-apps.conf"
 [ -f "$conf" ] || { echo "missing $conf"; exit 1; }
@@ -49,7 +48,6 @@ resolve() {
   return 1
 }
 
-# .desktop search path — includes Flatpak exports (user + system)
 APPDIRS=(
   "$HOME/.local/share/applications"
   "$HOME/.local/share/flatpak/exports/share/applications"
@@ -57,8 +55,6 @@ APPDIRS=(
   /usr/share/applications
 )
 
-# launch_cmd <config-name> -> the shell command that launches it.
-# Flatpak apps become "flatpak run <appid>"; everything else stays as-is.
 launch_cmd() {
   local name="$1" desk appid
   [ -z "$name" ] && return 0
@@ -71,8 +67,6 @@ launch_cmd() {
   fi
 }
 
-# true if a resolved .desktop declares Terminal=true (can't launch from a GUI file
-# manager on Sway — there is no x-terminal-emulator to host it)
 is_terminal_desktop() {
   local d
   for d in "${APPDIRS[@]}"; do
@@ -81,10 +75,6 @@ is_terminal_desktop() {
   return 1
 }
 
-# CLI editor (nvim/vim/nano/helix/…): wrap it in a Terminal=false .desktop that runs
-# it inside the terminal, so file managers / xdg-open can actually launch it.
-# One wrapper per command (<cmd>-terminal.desktop) so text_editor and code_editor
-# never clobber each other.
 term_wrapper_desktop() {
   local ed="$1" t base; t=$(get terminal); t=${t:-foot}
   command -v "$ed" >/dev/null || return 1
@@ -99,8 +89,6 @@ echo "MIME defaults:"
 for cat in "${!MIMES[@]}"; do
   app=$(get "$cat"); [ -z "$app" ] && continue
   desk=$(resolve "$app")
-  # editors: if the app is a terminal program (no .desktop, or Terminal=true),
-  # substitute a Terminal=false wrapper so GUI launches actually work.
   if [ "$cat" = "text_editor" ] || [ "$cat" = "code_editor" ]; then
     if [ -z "${desk:-}" ] || is_terminal_desktop "$desk"; then
       w=$(term_wrapper_desktop "$app") && desk="$w"
@@ -115,9 +103,7 @@ browser=$(get browser)
 [ -n "$browser" ] && xdg-settings set default-web-browser "$(resolve "$browser")" 2>/dev/null
 
 term=$(get terminal); fm=$(get file_manager)
-# terminal $EDITOR: prefer terminal_editor, fall back to text_editor
 editor=$(get terminal_editor); [ -z "$editor" ] && editor=$(get text_editor)
-# launch commands (Flatpak apps -> "flatpak run <id>")
 term_cmd="$(launch_cmd "$term")"; browser_cmd="$(launch_cmd "$browser")"; fm_cmd="$(launch_cmd "$fm")"
 swayfile="$HOME/.config/sway/config.d/default-apps.conf"
 {

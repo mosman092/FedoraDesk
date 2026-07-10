@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Clipboard history picker. Enter = paste (auto-type text / re-copy image).
-# Alt+Return = copy only.  Alt+Delete = clear history.
 set -u
 dir="$HOME/.cache/clip-history"
 [ -d "$dir" ] || { notify-send "Clipboard" "History empty"; exit 0; }
@@ -32,8 +30,8 @@ case "$f" in
     ;;
   txt_*)
     wl-copy < "$dir/$f" >/dev/null 2>&1
-    if [ "$rc" -eq 10 ]; then exit 0; fi          # Alt+Return = copy only
-    sleep 0.15                                     # let focus return to the app
-    wtype "$(cat "$dir/$f")"                        # Windows-11 style auto-type
+    if [ "$rc" -eq 10 ]; then exit 0; fi
+    sleep 0.15     # let focus return to the app before auto-typing
+    wtype "$(cat "$dir/$f")"
     ;;
 esac

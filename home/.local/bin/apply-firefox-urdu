@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-# Point Firefox's Arabic-script fallback at Noto Nastaliq Urdu, in every profile.
-# Firefox buckets all Arabic-script (Urdu/Arabic/Persian) into one "ar" langgroup
-# and reads its own font.name-list.*.ar prefs, so the system fontconfig alone
-# isn't enough for Firefox — this sets the prefs via user.js. Idempotent.
 set -u
 
 block='// Urdu Nastaliq for Arabic-script fallback (added by dotfiles)
@@ -16,7 +12,6 @@ for base in "$HOME/.config/mozilla/firefox" "$HOME/.mozilla/firefox" \
   [ -d "$base" ] || continue
   for prof in "$base"/*/; do
     [ -d "$prof" ] || continue
-    # a real profile has prefs.js/times.json, or is named *.default*
     if [ ! -f "${prof}prefs.js" ] && [ ! -f "${prof}times.json" ]; then
       case "$prof" in *.default*/) : ;; *) continue ;; esac
     fi

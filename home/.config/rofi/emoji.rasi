@@ -1,4 +1,3 @@
-/* Emoji picker */
 @import "shared"
 
 * { accent: @yellow; }

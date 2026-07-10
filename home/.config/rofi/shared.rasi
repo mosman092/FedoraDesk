@@ -1,16 +1,3 @@
-/*  Shared design system for every rofi menu — Catppuccin Mocha.
- *
- *  Layout: a fullscreen dimmed overlay with the visible card (`mainbox`)
- *  centered inside it.  The dim area is built from four invisible buttons
- *  bound to kb-cancel, so a left-click anywhere outside the card closes
- *  the menu (right-click closes too, via kb-cancel in config.rasi).
- *
- *  Each menu theme imports this and overrides only:
- *    * { accent: ...; }        menu accent colour
- *    mainbox { width: ...; }   card width
- *    listview { lines/columns }
- */
-
 * {
     /* palette */
     base:     #1e1e2e;
@@ -39,6 +26,7 @@
     font:             "Adwaita Sans 12";
 }
 
+/* dimmed overlay: click outside the card cancels */
 window {
     fullscreen:       true;
     transparency:     "real";

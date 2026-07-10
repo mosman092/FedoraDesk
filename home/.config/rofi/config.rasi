@@ -1,6 +1,3 @@
-/*  Global rofi config + default theme (window switcher, plain dmenu).
- *  Menu-specific looks live in launcher / clipboard / emoji / keys / power .rasi
- */
 @import "shared"
 
 configuration {
@@ -12,8 +9,7 @@ configuration {
     display-window:   "Windows";
     window-format:    "{c}   {t}";
 
-    /* mouse: hover highlights, left click activates, click on the dim
-       overlay (or right-click anywhere) closes — see shared.rasi */
+    /* mouse: click outside card or right-click closes — see shared.rasi */
     hover-select:     true;
     click-to-exit:    false;
     kb-cancel:        "Escape,MouseSecondary";
