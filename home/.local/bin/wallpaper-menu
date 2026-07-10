@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Rofi wallpaper picker: thumbnails of images from your wallpaper dirs.
+# Rofi wallpaper picker with a thumbnail cache — Rofi loads small cached PNGs
+# instead of decoding full-size (and un-loadable .jxl) images every time.
+# `wallpaper-menu --warm` only builds the cache (run at login to pre-warm it).
 set -u
-# drop wallpapers into ~/Pictures/Wallpapers (bare ~/Pictures is skipped so
-# screenshots don't show up as choices)
 DIRS=("$HOME/Pictures/Wallpapers" "$HOME/Wallpapers" "/usr/share/backgrounds")
+CACHE="$HOME/.cache/wallpaper-thumbs"; mkdir -p "$CACHE"
 
 mapfile -t files < <(
   find "${DIRS[@]}" -maxdepth 3 -type f \
@@ -11,13 +12,30 @@ mapfile -t files < <(
     2>/dev/null | sort -u
 )
 if [ "${#files[@]}" -eq 0 ]; then
-  command -v notify-send >/dev/null && notify-send "Wallpaper" "No images in ~/Pictures/Wallpapers, ~/Pictures, or /usr/share/backgrounds"
+  [ "${1:-}" = "--warm" ] && exit 0
+  command -v notify-send >/dev/null && notify-send "Wallpaper" "No images in ~/Pictures/Wallpapers, ~/Wallpapers, or /usr/share/backgrounds"
   exit 0
 fi
 
+thumb() { printf '%s/%s.png' "$CACHE" "$(printf '%s' "$1" | md5sum | cut -d' ' -f1)"; }
+
+# build any missing/stale thumbnails in parallel (magick reads jxl → png Rofi can show)
+if command -v magick >/dev/null; then
+  for f in "${files[@]}"; do
+    t=$(thumb "$f")
+    if [ ! -f "$t" ] || [ "$f" -nt "$t" ]; then
+      magick "$f" -auto-orient -thumbnail 400x400 "$t" 2>/dev/null &
+    fi
+  done
+  wait
+fi
+
+[ "${1:-}" = "--warm" ] && exit 0
+
 idx=$(
   for f in "${files[@]}"; do
-    printf '%s\0icon\x1f%s\n' "$(basename "$f")" "$f"
+    t=$(thumb "$f"); [ -f "$t" ] || t="$f"
+    printf '%s\0icon\x1f%s\n' "$(basename "$f")" "$t"
   done | rofi -dmenu -i -p Wallpaper -format i -show-icons -theme ~/.config/rofi/wallpaper.rasi
 )
 [ -n "$idx" ] || exit 0
