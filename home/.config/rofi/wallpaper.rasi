@@ -1,0 +1,29 @@
+@import "shared"
+
+* { accent: @mauve; }
+
+mainbox { width: 960px; }
+entry   { placeholder: "Search wallpapers…"; }
+
+listview {
+    lines:        2;
+    columns:      4;
+    spacing:      12px;
+    fixed-height: true;
+}
+element {
+    orientation:   vertical;
+    padding:       8px;
+    spacing:       6px;
+    border-radius: 8px;
+    children:      [ "element-icon", "element-text" ];
+}
+element-icon {
+    size:             200px;
+    border-radius:    8px;
+    horizontal-align: 0.5;
+}
+element-text {
+    horizontal-align: 0.5;
+    font:             "Adwaita Sans 10";
+}

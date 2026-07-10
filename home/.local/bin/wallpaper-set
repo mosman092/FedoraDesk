@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Set the wallpaper on BOTH the home screen (swaybg) and the lock screen
+# (swaylock), and remember it (restored on next login). Usage: wallpaper-set <image>
+set -u
+wp="${1:-}"
+[ -f "$wp" ] || { echo "usage: wallpaper-set <image>"; exit 1; }
+
+mkdir -p "$HOME/.local/state"
+printf '%s\n' "$wp" > "$HOME/.local/state/wallpaper"
+
+# home screen (live)
+swaymsg output "*" bg "$wp" fill >/dev/null 2>&1
+
+# lock screen — swaylock reads ~/.config/swaylock/config; update image= in place
+cfg="$HOME/.config/swaylock/config"
+mkdir -p "$(dirname "$cfg")"; touch "$cfg"
+grep -q '^image='   "$cfg" && sed -i "s|^image=.*|image=$wp|" "$cfg" || echo "image=$wp" >> "$cfg"
+grep -q '^scaling=' "$cfg" || echo "scaling=fill" >> "$cfg"

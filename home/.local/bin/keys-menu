@@ -45,6 +45,7 @@ NAMES = [
     (r"power-menu", "Power menu"),
     (r"keys-menu", "This cheatsheet"),
     (r"emoji-menu", "Emoji picker"),
+    (r"wallpaper-menu", "Wallpaper picker"),
     (r"nightlight-toggle", "Night light on/off"),
     (r"theme-toggle", "Dark / light mode"),
     (r"grimshot --notify copy area", "Screenshot region -> clipboard"),

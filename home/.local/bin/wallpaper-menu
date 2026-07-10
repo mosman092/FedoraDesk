@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Rofi wallpaper picker: thumbnails of images from your wallpaper dirs.
+set -u
+# drop wallpapers into ~/Pictures/Wallpapers (bare ~/Pictures is skipped so
+# screenshots don't show up as choices)
+DIRS=("$HOME/Pictures/Wallpapers" "$HOME/Wallpapers" "/usr/share/backgrounds")
+
+mapfile -t files < <(
+  find "${DIRS[@]}" -maxdepth 3 -type f \
+    \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.jxl' \) \
+    2>/dev/null | sort -u
+)
+if [ "${#files[@]}" -eq 0 ]; then
+  command -v notify-send >/dev/null && notify-send "Wallpaper" "No images in ~/Pictures/Wallpapers, ~/Pictures, or /usr/share/backgrounds"
+  exit 0
+fi
+
+idx=$(
+  for f in "${files[@]}"; do
+    printf '%s\0icon\x1f%s\n' "$(basename "$f")" "$f"
+  done | rofi -dmenu -i -p Wallpaper -format i -show-icons -theme ~/.config/rofi/wallpaper.rasi
+)
+[ -n "$idx" ] || exit 0
+~/.local/bin/wallpaper-set "${files[$idx]}"
