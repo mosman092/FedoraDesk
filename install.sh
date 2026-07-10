@@ -203,7 +203,7 @@ fi
 
 # nvim toolbox: Neovim lives here, not on the host (reached via ~/.local/bin/nvim)
 if command -v toolbox >/dev/null; then
-  say "Setting up the 'nvim' toolbox (Neovim + LazyVim deps)…"
+  say "Setting up toolboxes (nvim: Neovim · dev: git/gh)…"
   bash "$DOTFILES/toolbox-setup.sh" || warn "toolbox setup failed — run ./toolbox-setup.sh later"
 else
   warn "toolbox not found — skipping; the nvim wrapper won't work until the toolbox exists."
