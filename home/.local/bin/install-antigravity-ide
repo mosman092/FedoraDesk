@@ -47,14 +47,17 @@ cat > "$APPS/antigravity.desktop" <<EOF
 [Desktop Entry]
 Name=Antigravity IDE
 Comment=Google Antigravity agentic IDE
-Exec=$bin %F
+Exec=$bin %U
 Icon=${icon:-applications-development}
 Type=Application
 Categories=Development;IDE;TextEditor;
+MimeType=x-scheme-handler/antigravity-ide;
 StartupNotify=true
 StartupWMClass=Antigravity
 Terminal=false
 EOF
 command -v update-desktop-database >/dev/null && update-desktop-database "$APPS" 2>/dev/null || true
+# register the IDE as the handler for its OAuth callback scheme (antigravity-ide://)
+command -v xdg-mime >/dev/null && xdg-mime default antigravity.desktop x-scheme-handler/antigravity-ide 2>/dev/null || true
 
 say "Done — run 'antigravity' or launch 'Antigravity IDE' from the app menu."
