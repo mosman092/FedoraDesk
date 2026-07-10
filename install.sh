@@ -52,7 +52,7 @@ declare -A PKG=(
   [swayidle]=swayidle [brightnessctl]=brightnessctl [ddcutil]=ddcutil
   [wlsunset]=wlsunset [pavucontrol]=pavucontrol [wpctl]=wireplumber
   [notify-send]=libnotify [gsettings]=glib2 [xdg-mime]=xdg-utils [btop]=btop
-  [tuned-adm]=tuned [fastfetch]=fastfetch
+  [tuned-adm]=tuned [fastfetch]=fastfetch [magick]=ImageMagick
 )
 # Neovim lives in the `nvim` toolbox (toolbox-setup.sh), not the host.
 
