@@ -47,7 +47,7 @@ fi
 
 declare -A PKG=(
   [rofi]=rofi [waybar]=waybar [foot]=foot [dunst]=dunst [thunar]=Thunar
-  [imv]=imv [mpv]=mpv [xarchiver]=xarchiver [grim]=grim [slurp]=slurp
+  [imv]=imv [xarchiver]=xarchiver [grim]=grim [slurp]=slurp
   [grimshot]=grimshot [wl-copy]=wl-clipboard [wtype]=wtype [swaylock]=swaylock
   [swayidle]=swayidle [brightnessctl]=brightnessctl [ddcutil]=ddcutil
   [wlsunset]=wlsunset [pavucontrol]=pavucontrol [wpctl]=wireplumber
@@ -103,12 +103,13 @@ if command -v flatpak >/dev/null; then
   flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
   sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo \
     2>/dev/null || warn "couldn't add system-wide Flathub remote"
-  say "Installing Flatpak apps (Chromium, Text Editor, LocalSend, Bazaar, Flatseal)…"
+  say "Installing Flatpak apps (Chromium, Text Editor, mpv, LocalSend, Bazaar, Flatseal)…"
   flatpak install -y --user flathub \
-    org.chromium.Chromium org.gnome.TextEditor \
+    org.chromium.Chromium org.gnome.TextEditor io.mpv.Mpv \
     org.localsend.localsend_app io.github.kolunmi.Bazaar com.github.tchx84.Flatseal \
     || warn "Flatpak install failed."
   flatpak override --user --filesystem=home org.gnome.TextEditor 2>/dev/null || true
+  flatpak override --user --filesystem=home io.mpv.Mpv 2>/dev/null || true
   flatpak override --user --share=network --socket=wayland org.localsend.localsend_app \
     2>/dev/null || true
   flatpak update -y --user 2>/dev/null || true
