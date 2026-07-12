@@ -15,9 +15,9 @@ info() {
 # host packages (rpm-ostree) — verb wrapper, Atomic-aware
 pkg() {
   case "${1:-status}" in
-    install) sudo rpm-ostree install "${@:2}" ;;
-    remove)  sudo rpm-ostree uninstall "${@:2}" ;;
-    update)  sudo rpm-ostree upgrade ;;
+    install) rpm-ostree install "${@:2}" ;;
+    remove)  rpm-ostree uninstall "${@:2}" ;;
+    update)  rpm-ostree upgrade ;;
     status)  rpm-ostree status ;;
     info)    rpm -qi "${@:2}" ;;
     clean)   clean ;;
@@ -47,7 +47,7 @@ clean() {
   _btrfs() { local x; for x in /sysroot /; do findmnt -no FSTYPE "$x" 2>/dev/null | grep -q btrfs && { echo "$x"; return 0; }; done; return 1; }
 
   if _step "[1/8] rpm-ostree cleanup (old base + metadata cruft)?"; then
-    sudo rpm-ostree cleanup -bm
+    rpm-ostree cleanup -bm
   fi
 
   if _step "[2/8] Remove unused Flatpak runtimes?"; then
