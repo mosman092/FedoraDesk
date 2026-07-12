@@ -22,7 +22,7 @@ This repo is the single source of truth. `install.sh` **symlinks** everything un
 
 1. Refuses to run as root; primes `sudo` once for the whole run.
 2. **Updates the base system** (`rpm-ostree upgrade`).
-3. Layers only the **missing** packages — including `fastfetch`, the editors **`vim`** + **`geany`**, and **Brave Origin** — in one `rpm-ostree` transaction (**not** live-applied; it comes up on the reboot).
+3. Layers only the **missing** packages — including `fastfetch`, the editors **`vim`** + **`mousepad`**, and **Brave Origin** — in one `rpm-ostree` transaction (**not** live-applied; it comes up on the reboot).
 4. Removes **Firefox from the base image** (`rpm-ostree override remove`) — Brave is the daily driver; Firefox is used only for the odd test, so it comes from Flatpak instead.
 5. Installs a small set of **Flatpaks** (per-user Flathub only, **no** system-wide remote): Chromium, **Firefox**, **mpv**, **LocalSend**, **Obsidian** — just the apps not packaged natively (plus the home-filesystem / network / Wayland sandbox permissions they need).
 6. Installs the self-contained CLI tools (Claude Code, Antigravity) into `~/.local`.
@@ -54,7 +54,7 @@ The host stays lean — heavier dev tooling lives in a `toolbox` container. `too
 | **Waybar** | `waybar/{config.jsonc,style.css}` — floating-islands bar |
 | **Rofi** | `rofi/*.rasi` — shared design system + launcher / clipboard / emoji / keys / power menus |
 | **Fonts** | `fontconfig/fonts.conf` — CJK / Thai / Bengali / Arabic / **Urdu Nastaliq** / emoji fallback |
-| **Editors** | `vim` (terminal `EDITOR`) + `geany` (GUI `text_editor`/`code_editor`) — both native rpm on the host |
+| **Editors** | `vim` (terminal `EDITOR`, VS Code-style keys via `~/.vimrc`) + `mousepad` (GUI `text_editor`/`code_editor`, Solarized that follows dark/light) — both native rpm on the host |
 | **Apps** | `foot/foot.ini`, `dunst/dunstrc`, `ddcutil/ddcutilrc`, `default-apps.conf` |
 | **Scripts** | `~/.local/bin/*` |
 

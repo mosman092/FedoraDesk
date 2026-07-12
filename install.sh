@@ -53,10 +53,10 @@ declare -A PKG=(
   [wlsunset]=wlsunset [pavucontrol]=pavucontrol [wpctl]=wireplumber
   [notify-send]=libnotify [gsettings]=glib2 [xdg-mime]=xdg-utils [btop]=btop
   [tuned-adm]=tuned [fastfetch]=fastfetch [magick]=ImageMagick [jq]=jq
-  [vim]=vim-enhanced [geany]=geany
+  [vim]=vim-enhanced [mousepad]=mousepad
 )
-# vim is a small, dependency-free editor, so it's layered on the host directly
-# (no toolbox). The dev toolbox below only carries git/gh for the claude/agy CLIs.
+# vim + mousepad are small, native editors, so they're layered on the host
+# directly (no toolbox). The dev toolbox below only carries git/gh for claude/agy.
 
 need=()
 for cmd in "${!PKG[@]}"; do
@@ -115,7 +115,7 @@ fi
 
 if command -v flatpak >/dev/null; then
   # Per-user Flathub only — no system-wide remote. Editors/tools are native rpm
-  # (vim + geany); Flatpak carries just the few apps not packaged for the host.
+  # (vim + mousepad); Flatpak carries just the few apps not packaged for the host.
   flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
   say "Installing Flatpak apps (Chromium, Firefox, mpv, LocalSend, Obsidian)…"
   flatpak install -y --user flathub \
@@ -168,6 +168,12 @@ mkdir -p ~/.config/gtk-3.0 ~/.config/gtk-4.0
 if command -v gsettings >/dev/null; then
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark 2>/dev/null || true
   gsettings set org.gnome.desktop.interface gtk-theme Adwaita       2>/dev/null || true
+  # Mousepad coding defaults: Tomorrow Night Blue to match the default dark theme
+  # (theme-toggle flips it to Solarized Light in light mode), plus line numbers.
+  msp() { gsettings set org.xfce.mousepad.preferences.view "$1" "$2" 2>/dev/null || true; }
+  msp color-scheme "tomorrownightblue"
+  msp show-line-numbers true
+  msp highlight-current-line true
 fi
 for v in gtk-3.0 gtk-4.0; do
   printf '[Settings]\ngtk-theme-name=Adwaita\ngtk-application-prefer-dark-theme=true\ngtk-icon-theme-name=Adwaita\n' > ~/.config/$v/settings.ini

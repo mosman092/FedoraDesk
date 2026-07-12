@@ -18,6 +18,11 @@ for v in gtk-3.0 gtk-4.0; do
 done
 printf 'gtk-theme-name="Adwaita"\n' > ~/.gtkrc-2.0
 
+# Mousepad: its UI follows the GTK theme; flip the editor color scheme to match.
+# Day = Solarized Light, night = Tomorrow Night Blue (vendored scheme).
+[ "$mode" = dark ] && msp_scheme=tomorrownightblue || msp_scheme=solarized-light
+gsettings set org.xfce.mousepad.preferences.view color-scheme "$msp_scheme" 2>/dev/null || true
+
 pkill -RTMIN+9 waybar 2>/dev/null
 pgrep -x thunar >/dev/null && thunar -q 2>/dev/null
 notify-send "Theme" "${mode^} mode enabled"

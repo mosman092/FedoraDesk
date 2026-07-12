@@ -60,8 +60,9 @@ command -v update-desktop-database >/dev/null && update-desktop-database "$APPS"
 # register the IDE as the handler for its OAuth callback scheme (antigravity-ide://)
 command -v xdg-mime >/dev/null && xdg-mime default antigravity.desktop x-scheme-handler/antigravity-ide 2>/dev/null || true
 
-# force Solarized that follows the system dark/light mode (built-in themes; the
-# same portal signal theme-toggle flips). Merge keys, keep any existing settings.
+# Theme follows the system dark/light mode (built-in themes; the same portal
+# signal theme-toggle flips): Solarized Light by day, Tomorrow Night Blue at
+# night. Merge keys, keep any existing settings.
 CFG="$HOME/.config/Antigravity IDE/User/settings.json"
 mkdir -p "$(dirname "$CFG")"
 python3 - "$CFG" <<'PY' 2>/dev/null || true
@@ -74,7 +75,7 @@ if os.path.exists(p):
         os.replace(p, p + ".bak"); data = {}
 data.update({
     "window.autoDetectColorScheme": True,
-    "workbench.preferredDarkColorTheme": "Solarized Dark",
+    "workbench.preferredDarkColorTheme": "Tomorrow Night Blue",
     "workbench.preferredLightColorTheme": "Solarized Light",
 })
 json.dump(data, open(p, "w"), indent=4)
