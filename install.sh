@@ -71,11 +71,12 @@ has_font "Noto Serif "         || need+=(google-noto-serif-vf-fonts)
 has_font "Noto Sans Mono"      || need+=(google-noto-sans-mono-vf-fonts)
 has_font "Noto Color Emoji"    || need+=(google-noto-color-emoji-fonts)
 has_font "Noto Sans CJK"       || need+=(google-noto-sans-cjk-fonts)
-has_font "Noto Nastaliq Urdu"  || need+=(google-noto-nastaliq-urdu-fonts)
 has_font "Noto Sans Bengali"   || need+=(google-noto-sans-bengali-fonts)
 has_font "Noto Sans Thai"      || need+=(google-noto-sans-thai-fonts)
-has_font "DejaVu Sans"         || need+=(dejavu-sans-fonts dejavu-serif-fonts)
 has_font "Liberation Sans"     || need+=(liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts)
+# Noto Nastaliq Urdu + DejaVu are NOT layered — they ship as plain .ttf files in
+# home/.local/share/fonts/ (symlinked into ~/.local/share/fonts, cached by
+# first-run's fc-cache). Keeps them out of every rpm-ostree deployment.
 
 if ! command -v brave-origin >/dev/null 2>&1; then
   say "Adding Brave repo (for brave-origin)…"

@@ -53,7 +53,7 @@ The host stays lean — heavier dev tooling lives in a `toolbox` container. `too
 | **Sway** | `sway/config.d/{appearance,keybindings,outputs}.conf`, `sway/environment` |
 | **Waybar** | `waybar/{config.jsonc,style.css}` — floating-islands bar |
 | **Rofi** | `rofi/*.rasi` — shared design system + launcher / clipboard / emoji / keys / power menus |
-| **Fonts** | `fontconfig/fonts.conf` — CJK / Thai / Bengali / Arabic / **Urdu Nastaliq** / emoji fallback |
+| **Fonts** | `fontconfig/fonts.conf` — CJK / Thai / Bengali / Arabic / **Urdu Nastaliq** / emoji fallback. **Noto Nastaliq Urdu + DejaVu** ship as `.ttf` files under `.local/share/fonts/` (symlinked, not layered — keeps them out of every `rpm-ostree` deployment); the rest come from the base image. |
 | **Editors** | `vim` (terminal `EDITOR`, VS Code-style keys via `~/.vimrc`) + `mousepad` (GUI `text_editor`/`code_editor`, Solarized that follows dark/light) — both native rpm on the host |
 | **Apps** | `foot/foot.ini`, `dunst/dunstrc`, `ddcutil/ddcutilrc`, `default-apps.conf` |
 | **Scripts** | `~/.local/bin/*` |
