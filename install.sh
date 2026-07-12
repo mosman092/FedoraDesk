@@ -105,11 +105,12 @@ if command -v flatpak >/dev/null; then
   # Per-user Flathub only — no system-wide remote. Editors/tools are native rpm
   # (vim + geany); Flatpak carries just the few apps not packaged for the host.
   flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-  say "Installing Flatpak apps (Chromium, mpv, LocalSend)…"
+  say "Installing Flatpak apps (Chromium, mpv, LocalSend, Obsidian)…"
   flatpak install -y --user flathub \
-    org.chromium.Chromium io.mpv.Mpv org.localsend.localsend_app \
+    org.chromium.Chromium io.mpv.Mpv org.localsend.localsend_app md.obsidian.Obsidian \
     || warn "Flatpak install failed."
   flatpak override --user --filesystem=home io.mpv.Mpv 2>/dev/null || true
+  flatpak override --user --filesystem=home md.obsidian.Obsidian 2>/dev/null || true
   flatpak override --user --share=network --socket=wayland org.localsend.localsend_app \
     2>/dev/null || true
   flatpak update -y --user 2>/dev/null || true

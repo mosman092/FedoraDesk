@@ -23,7 +23,7 @@ This repo is the single source of truth. `install.sh` **symlinks** everything un
 1. Refuses to run as root; primes `sudo` once for the whole run.
 2. **Updates the base system** (`rpm-ostree upgrade`).
 3. Layers only the **missing** packages — including `fastfetch`, the editors **`vim`** + **`geany`**, and **Brave Origin** — in one `rpm-ostree` transaction (**not** live-applied; it comes up on the reboot).
-4. Installs a small set of **Flatpaks** (per-user Flathub only, **no** system-wide remote): Chromium, **mpv**, **LocalSend** — just the apps not packaged natively (plus the home-filesystem / network / Wayland sandbox permissions they need).
+4. Installs a small set of **Flatpaks** (per-user Flathub only, **no** system-wide remote): Chromium, **mpv**, **LocalSend**, **Obsidian** — just the apps not packaged natively (plus the home-filesystem / network / Wayland sandbox permissions they need).
 5. Installs the self-contained CLI tools (Claude Code, Antigravity) into `~/.local`.
 6. Symlinks configs + scripts and writes the GTK dark theme.
 7. Sets the firewall rules and the Firefox Urdu font pref.
