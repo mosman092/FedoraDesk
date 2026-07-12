@@ -23,12 +23,13 @@ This repo is the single source of truth. `install.sh` **symlinks** everything un
 1. Refuses to run as root; primes `sudo` once for the whole run.
 2. **Updates the base system** (`rpm-ostree upgrade`).
 3. Layers only the **missing** packages — including `fastfetch`, the editors **`vim`** + **`geany`**, and **Brave Origin** — in one `rpm-ostree` transaction (**not** live-applied; it comes up on the reboot).
-4. Installs a small set of **Flatpaks** (per-user Flathub only, **no** system-wide remote): Chromium, **mpv**, **LocalSend**, **Obsidian** — just the apps not packaged natively (plus the home-filesystem / network / Wayland sandbox permissions they need).
-5. Installs the self-contained CLI tools (Claude Code, Antigravity) into `~/.local`.
-6. Symlinks configs + scripts and writes the GTK dark theme.
-7. Sets the firewall rules and the Firefox Urdu font pref.
-8. Creates the **`dev` toolbox** (git · gh · vim) — see [Toolboxes](#toolboxes). The editor, **`vim`**, is layered on the host.
-9. **Reboots** — packages, fonts, and defaults all take effect on the clean boot.
+4. Removes **Firefox from the base image** (`rpm-ostree override remove`) — Brave is the daily driver; Firefox is used only for the odd test, so it comes from Flatpak instead.
+5. Installs a small set of **Flatpaks** (per-user Flathub only, **no** system-wide remote): Chromium, **Firefox**, **mpv**, **LocalSend**, **Obsidian** — just the apps not packaged natively (plus the home-filesystem / network / Wayland sandbox permissions they need).
+6. Installs the self-contained CLI tools (Claude Code, Antigravity) into `~/.local`.
+7. Symlinks configs + scripts and writes the GTK dark theme.
+8. Sets the firewall rules and the Firefox Urdu font pref.
+9. Creates the **`dev` toolbox** (git · gh · vim) — see [Toolboxes](#toolboxes). The editor, **`vim`**, is layered on the host.
+10. **Reboots** — packages, fonts, and defaults all take effect on the clean boot.
 
 **Nothing is applied live.** `install.sh` lays everything down and reboots once into a consistent state — no half-applied packages, no mid-install reloads. The font cache and default-app/MIME setup run **once on the first boot** via `~/.local/bin/first-run` (hooked into Sway's startup).
 

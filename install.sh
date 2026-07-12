@@ -101,13 +101,26 @@ else
   say "All required packages + Brave Origin already present."
 fi
 
+# Firefox ships in the Sericea base image, but Brave is the daily driver and
+# Firefox is only needed for the occasional test — so drop it from the base and
+# use the (newer, Mozilla-official) Flatpak installed below instead. Idempotent:
+# only fires while firefox is still part of the base. Applies on the reboot.
+if command -v rpm-ostree >/dev/null && rpm -q firefox >/dev/null 2>&1; then
+  rmff=(firefox)
+  rpm -q firefox-langpacks >/dev/null 2>&1 && rmff+=(firefox-langpacks)
+  say "Removing base Firefox (${rmff[*]}) — using the Flatpak instead…"
+  sudo rpm-ostree override remove "${rmff[@]}" \
+    || warn "couldn't override-remove firefox — remove manually: rpm-ostree override remove ${rmff[*]}"
+fi
+
 if command -v flatpak >/dev/null; then
   # Per-user Flathub only — no system-wide remote. Editors/tools are native rpm
   # (vim + geany); Flatpak carries just the few apps not packaged for the host.
   flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-  say "Installing Flatpak apps (Chromium, mpv, LocalSend, Obsidian)…"
+  say "Installing Flatpak apps (Chromium, Firefox, mpv, LocalSend, Obsidian)…"
   flatpak install -y --user flathub \
-    org.chromium.Chromium io.mpv.Mpv org.localsend.localsend_app md.obsidian.Obsidian \
+    org.chromium.Chromium org.mozilla.firefox io.mpv.Mpv \
+    org.localsend.localsend_app md.obsidian.Obsidian \
     || warn "Flatpak install failed."
   flatpak override --user --filesystem=home io.mpv.Mpv 2>/dev/null || true
   flatpak override --user --filesystem=home md.obsidian.Obsidian 2>/dev/null || true
