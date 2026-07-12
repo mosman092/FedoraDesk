@@ -1,4 +1,4 @@
 QT_QPA_PLATFORMTHEME=xdgdesktopportal
 TERMINAL=foot
 BROWSER=brave-origin
-EDITOR=nvim
+EDITOR=vim

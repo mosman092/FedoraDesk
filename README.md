@@ -27,24 +27,23 @@ This repo is the single source of truth. `install.sh` **symlinks** everything un
 5. Installs the self-contained CLI tools (Claude Code, Antigravity) into `~/.local`.
 6. Symlinks configs + scripts and writes the GTK dark theme.
 7. Sets the firewall rules and the Firefox Urdu font pref.
-8. Creates the **`nvim` + `dev` toolboxes** (see [Toolboxes](#toolboxes)).
+8. Creates the **`dev` toolbox** (git · gh · vim) — see [Toolboxes](#toolboxes). The editor, **`vim`**, is layered on the host.
 9. **Reboots** — packages, fonts, and defaults all take effect on the clean boot.
 
 **Nothing is applied live.** `install.sh` lays everything down and reboots once into a consistent state — no half-applied packages, no mid-install reloads. The font cache and default-app/MIME setup run **once on the first boot** via `~/.local/bin/first-run` (hooked into Sway's startup).
 
 ## Toolboxes
 
-The host stays lean — dev tools live in `toolbox` containers, not layered on the base OS. `toolbox-setup.sh` creates two (idempotent; re-run anytime):
+The host stays lean — heavier dev tooling lives in a `toolbox` container. `toolbox-setup.sh` creates one (idempotent; re-run anytime):
 
 | Toolbox | Contains | Reached via |
 |---------|----------|-------------|
-| **`nvim`** | Neovim + LazyVim deps (`python3-neovim`, `ripgrep`, `fd`, `gcc`/`make`, `git`, `sqlite`, `node`/`npm`, `fzf`) | `~/.local/bin/nvim` wrapper |
-| **`dev`** | `git` + `gh` | typing `claude` / `agy` |
+| **`dev`** | `git` + `gh` + `vim` | typing `claude` / `agy` |
 
-- **`nvim`** — the `~/.local/bin/nvim` wrapper transparently runs Neovim **inside** the container, so `nvim file.txt` from your terminal, Thunar, or a Sway keybinding all Just Work. `~/.config/nvim` and your files are shared, so it's the **same LazyVim setup editing your real files**. Node is there only for JS/TS LSPs.
-- **`dev`** — `~/.bashrc.d/dev.sh` makes the **CLIs** `claude` and `agy` (Antigravity CLI) run **inside `dev`**, so they use that container's `git`/`gh`. They're self-contained binaries in shared `~/.local`, so the same file runs on host or in the container — the wrapper just picks where.
+- **`dev`** — `~/.bashrc.d/dev.sh` makes the **CLIs** `claude` and `agy` (Antigravity CLI) run **inside `dev`**, so they use that container's `git`/`gh` (and `vim` as the commit editor). They're self-contained binaries in shared `~/.local`, so the same file runs on host or in the container — the wrapper just picks where.
+- **Editor** — `vim` is small and dependency-free, so it's layered on the **host** directly (no toolbox, no wrapper). `vim file.txt` from your terminal, Thunar, or a Sway keybinding all Just Work.
 - **`antigravity`** is the **GUI IDE** (not a CLI) and launches on the **host** — it is *not* wrapped.
-- Each container is a throwaway `dnf` playground (`toolbox rm <name>` to reset) with **zero** cost to the host base image.
+- The container is a throwaway `dnf` playground (`toolbox rm dev` to reset) with **zero** cost to the host base image.
 
 ## What's inside
 
@@ -54,7 +53,7 @@ The host stays lean — dev tools live in `toolbox` containers, not layered on t
 | **Waybar** | `waybar/{config.jsonc,style.css}` — floating-islands bar |
 | **Rofi** | `rofi/*.rasi` — shared design system + launcher / clipboard / emoji / keys / power menus |
 | **Fonts** | `fontconfig/fonts.conf` — CJK / Thai / Bengali / Arabic / **Urdu Nastaliq** / emoji fallback |
-| **Editor** | `nvim/` — LazyVim config (Neovim runs in the [`nvim` toolbox](#toolboxes)) |
+| **Editor** | `vim` — layered on the host (`EDITOR` / `terminal_editor`) |
 | **Apps** | `foot/foot.ini`, `dunst/dunstrc`, `ddcutil/ddcutilrc`, `default-apps.conf` |
 | **Scripts** | `~/.local/bin/*` |
 

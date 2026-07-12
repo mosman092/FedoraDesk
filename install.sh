@@ -53,8 +53,10 @@ declare -A PKG=(
   [wlsunset]=wlsunset [pavucontrol]=pavucontrol [wpctl]=wireplumber
   [notify-send]=libnotify [gsettings]=glib2 [xdg-mime]=xdg-utils [btop]=btop
   [tuned-adm]=tuned [fastfetch]=fastfetch [magick]=ImageMagick [jq]=jq
+  [vim]=vim-enhanced
 )
-# Neovim lives in the `nvim` toolbox (toolbox-setup.sh), not the host.
+# vim is a small, dependency-free editor, so it's layered on the host directly
+# (no toolbox). The dev toolbox below only carries git/gh for the claude/agy CLIs.
 
 need=()
 for cmd in "${!PKG[@]}"; do
@@ -195,12 +197,12 @@ else
   warn "firewall-cmd not found — skipping firewall hardening."
 fi
 
-# nvim toolbox: Neovim lives here, not on the host (reached via ~/.local/bin/nvim)
+# dev toolbox: git/gh (+ vim) for the claude/agy CLIs. vim itself is on the host.
 if command -v toolbox >/dev/null; then
-  say "Setting up toolboxes (nvim: Neovim · dev: git/gh)…"
+  say "Setting up the dev toolbox (git · gh)…"
   bash "$DOTFILES/toolbox-setup.sh" || warn "toolbox setup failed — run ./toolbox-setup.sh later"
 else
-  warn "toolbox not found — skipping; the nvim wrapper won't work until the toolbox exists."
+  warn "toolbox not found — skipping; claude/agy need the dev toolbox for git/gh."
 fi
 
 say "Done — rebooting to apply everything."

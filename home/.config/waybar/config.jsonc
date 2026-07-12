@@ -109,7 +109,7 @@
     "backlight": {
         "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  {percent}%",
         "tooltip-format": "Brightness {percent}%\nScroll = adjust   ·   Click = display layout",
-        "on-click": "foot -e bash -c '~/.local/bin/nvim ~/.config/sway/config.d/outputs.conf; swaymsg reload'",
+        "on-click": "foot -e bash -c 'vim ~/.config/sway/config.d/outputs.conf; swaymsg reload'",
         "on-scroll-up": "~/.local/bin/brightness +5",
         "on-scroll-down": "~/.local/bin/brightness -5"
     },

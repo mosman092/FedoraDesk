@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# Run Neovim in the `nvim` toolbox; if already inside a toolbox, run the real one.
-[ -f /run/.toolboxenv ] && exec /usr/bin/nvim "$@"
-exec toolbox run -c nvim /usr/bin/nvim "$@"

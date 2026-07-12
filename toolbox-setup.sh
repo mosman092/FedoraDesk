@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Create the toolboxes and install their tools. Idempotent.
-#   nvim — Neovim + LazyVim deps (run via ~/.local/bin/nvim)
-#   dev  — git + gh; claude/agy (CLIs) run here (via ~/.bashrc.d/dev.sh)
+# Create the toolbox and install its tools. Idempotent.
+#   dev — git + gh + vim; claude/agy (CLIs) run here (via ~/.bashrc.d/dev.sh),
+#         vim is the commit editor. The editor on the host is vim too (layered).
 set -euo pipefail
 
 say()  { printf '\033[1;34m::\033[0m %s\n' "$*"; }
@@ -16,7 +16,6 @@ setup() {  # <name> <packages…>
   toolbox run -c "$name" sudo dnf install -y "$@" || warn "some packages failed in '$name' — re-run to retry."
 }
 
-setup nvim neovim python3-neovim nodejs npm fzf ripgrep fd-find sqlite gcc make git unzip
-setup dev  git gh
+setup dev git gh vim-enhanced
 
-say "Done. 'nvim' runs Neovim; type claude/agy to run them in 'dev'."
+say "Done. Type claude/agy to run them in 'dev'."
