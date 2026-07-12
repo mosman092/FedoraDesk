@@ -43,8 +43,18 @@ clean() {
   sudo -v || return 1
   local _r m
   _step() { echo; echo -en "\033[1;34m$1\033[0m  [Y/n] "; read -r _r; [[ -z "$_r" || "$_r" =~ ^[Yy] ]]; }
-  # real btrfs on Atomic is mounted at /sysroot; a plain install uses /
-  _btrfs() { local x; for x in /sysroot /; do findmnt -no FSTYPE "$x" 2>/dev/null | grep -q btrfs && { echo "$x"; return 0; }; done; return 1; }
+  # Pick a WRITABLE btrfs mount. On Atomic /sysroot is btrfs but mounted ro, so
+  # balance/scrub fail there; /var (or / on a plain install) is the same fs, rw.
+  _btrfs() {
+    local x opts
+    for x in /var /var/home / /sysroot; do
+      [ "$(findmnt -no FSTYPE "$x" 2>/dev/null)" = btrfs ] || continue
+      opts=",$(findmnt -no OPTIONS "$x" 2>/dev/null),"
+      [ "${opts#*,ro,}" = "$opts" ] || continue   # skip read-only mounts
+      echo "$x"; return 0
+    done
+    return 1
+  }
 
   if _step "[1/8] rpm-ostree cleanup (old base + metadata cruft)?"; then
     rpm-ostree cleanup -bm
@@ -68,11 +78,13 @@ clean() {
   fi
 
   if _step "[6/8] Btrfs balance (reclaim mostly-empty chunks)?"; then
-    m=$(_btrfs) && sudo btrfs balance start -dusage=5 -musage=5 "$m" || echo "  not btrfs — skipped."
+    if m=$(_btrfs); then sudo btrfs balance start -dusage=5 -musage=5 "$m"
+    else echo "  no writable btrfs mount — skipped."; fi
   fi
 
   if _step "[7/8] Btrfs scrub (integrity check)?"; then
-    m=$(_btrfs) && sudo btrfs scrub start -B "$m" || echo "  not btrfs — skipped."
+    if m=$(_btrfs); then sudo btrfs scrub start -B "$m"
+    else echo "  no writable btrfs mount — skipped."; fi
   fi
 
   if _step "[8/8] Trim SSD partitions?"; then
