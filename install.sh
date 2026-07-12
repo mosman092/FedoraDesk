@@ -53,7 +53,7 @@ declare -A PKG=(
   [wlsunset]=wlsunset [pavucontrol]=pavucontrol [wpctl]=wireplumber
   [notify-send]=libnotify [gsettings]=glib2 [xdg-mime]=xdg-utils [btop]=btop
   [tuned-adm]=tuned [fastfetch]=fastfetch [magick]=ImageMagick [jq]=jq
-  [vim]=vim-enhanced
+  [vim]=vim-enhanced [geany]=geany
 )
 # vim is a small, dependency-free editor, so it's layered on the host directly
 # (no toolbox). The dev toolbox below only carries git/gh for the claude/agy CLIs.
@@ -102,15 +102,13 @@ else
 fi
 
 if command -v flatpak >/dev/null; then
+  # Per-user Flathub only — no system-wide remote. Editors/tools are native rpm
+  # (vim + geany); Flatpak carries just the few apps not packaged for the host.
   flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-  sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo \
-    2>/dev/null || warn "couldn't add system-wide Flathub remote"
-  say "Installing Flatpak apps (Chromium, Text Editor, mpv, LocalSend, Bazaar, Flatseal)…"
+  say "Installing Flatpak apps (Chromium, mpv, LocalSend)…"
   flatpak install -y --user flathub \
-    org.chromium.Chromium org.gnome.TextEditor io.mpv.Mpv \
-    org.localsend.localsend_app io.github.kolunmi.Bazaar com.github.tchx84.Flatseal \
+    org.chromium.Chromium io.mpv.Mpv org.localsend.localsend_app \
     || warn "Flatpak install failed."
-  flatpak override --user --filesystem=home org.gnome.TextEditor 2>/dev/null || true
   flatpak override --user --filesystem=home io.mpv.Mpv 2>/dev/null || true
   flatpak override --user --share=network --socket=wayland org.localsend.localsend_app \
     2>/dev/null || true
