@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 f="/run/user/$(id -u)/keepawake"
 if [ -f "$f" ]; then
-  rm -f "$f"; notify-send -h string:x-dunst-stack-tag:keepawake "Keep awake" "Off"
+  rm -f "$f"; pkill -CONT -x swayidle; msg="Off"
 else
-  touch "$f"; notify-send -h string:x-dunst-stack-tag:keepawake "Keep awake" "On"
+  touch "$f"; pkill -STOP -x swayidle; msg="On"
 fi
+notify-send -h string:x-dunst-stack-tag:keepawake "Keep awake" "$msg"
+pkill -RTMIN+11 waybar 2>/dev/null || true

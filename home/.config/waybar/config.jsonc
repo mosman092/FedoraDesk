@@ -17,7 +17,7 @@
     "modules-right": [
         "custom/theme",
         "custom/nightlight",
-        "idle_inhibitor",
+        "custom/keepawake",
         "custom/clipboard",
         "pulseaudio",
         "pulseaudio#microphone",
@@ -69,15 +69,13 @@
         "interval": 1,
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
     },
-    "idle_inhibitor": {
-        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'>{icon}</span>",
-        "on-click": "~/.local/bin/keepawake",
-        "tooltip-format-activated": "Keep-awake ON",
-        "tooltip-format-deactivated": "Keep-awake OFF",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
-        }
+    "custom/keepawake": {
+        "exec": "~/.local/bin/keepawake-status",
+        "return-type": "json",
+        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'>{}</span>",
+        "interval": 5,
+        "signal": 11,
+        "on-click": "~/.local/bin/keepawake"
     },
     "tray": {
         "spacing": 10,

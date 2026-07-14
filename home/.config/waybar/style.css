@@ -41,7 +41,7 @@ window#waybar {
 #custom-theme,
 #custom-nightlight,
 #custom-power,
-#idle_inhibitor,
+#custom-keepawake,
 #pulseaudio,
 #network,
 #cpu,
@@ -121,8 +121,8 @@ window#waybar.empty #window { margin: 0; padding: 0; }
 #custom-nightlight { color: @subtext; font-size: 16px; }
 #custom-nightlight.on { color: @peach; border-color: alpha(@peach, 0.6); }
 #custom-nightlight:hover { background: alpha(@peach, 0.25); }
-#idle_inhibitor { color: @subtext; }
-#idle_inhibitor.activated { color: @peach; border-color: alpha(@peach, 0.6); }
+#custom-keepawake { color: @subtext; }
+#custom-keepawake.on { color: @peach; border-color: alpha(@peach, 0.6); }
 
 #cpu         { color: @peach; }
 #memory      { color: @mauve; }
