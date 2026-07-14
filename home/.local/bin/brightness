@@ -11,6 +11,7 @@ case "${1:-}" in
   ?*) brightnessctl -q set "${1}%" ;;
 esac
 pct=$(( 100 * $(brightnessctl get) / $(brightnessctl max) ))
+notify-send -h string:x-dunst-stack-tag:brightness -h int:value:"$pct" "Brightness" "${pct}%"
 
 echo "$pct" > "$tgt"
 (

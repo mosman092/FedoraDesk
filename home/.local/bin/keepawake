@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+f="/run/user/$(id -u)/keepawake"
+if [ -f "$f" ]; then
+  rm -f "$f"; notify-send -h string:x-dunst-stack-tag:keepawake "Keep awake" "Off"
+else
+  touch "$f"; notify-send -h string:x-dunst-stack-tag:keepawake "Keep awake" "On"
+fi

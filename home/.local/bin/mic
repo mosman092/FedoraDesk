@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -u
+s="@DEFAULT_AUDIO_SOURCE@"
+case "${1:-}" in
+  mute) wpctl set-mute "$s" toggle ;;
+  up)   wpctl set-volume --limit 1.0 "$s" 2%+ ;;
+  down) wpctl set-volume "$s" 2%- ;;
+esac
+read -r _ v rest < <(wpctl get-volume "$s")
+pct=$(awk "BEGIN{printf \"%d\", $v*100}")
+if grep -q MUTED <<<"$rest"; then
+  notify-send -h string:x-dunst-stack-tag:mic "Microphone" "Muted"
+else
+  notify-send -h string:x-dunst-stack-tag:mic -h int:value:"$pct" "Microphone" "${pct}%"
+fi
