@@ -10,6 +10,8 @@ DEFAULT_ICON = os.path.expanduser("~/.local/share/icons/window-fallback.svg")
 theme = Gtk.IconTheme.get_default()
 
 def icon_for(app):
+    if theme is None:
+        return DEFAULT_ICON
     for name in filter(None, (app, app.lower(), app.split(".")[-1].lower(), app.split("-")[0].lower())):
         info = theme.lookup_icon(name, 48, 0)
         if info and info.get_filename():
