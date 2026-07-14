@@ -1,6 +1,4 @@
 QT_QPA_PLATFORMTHEME=xdgdesktopportal
-# flat widget style for Qt apps (lxqt-policykit dialog)
-QT_STYLE_OVERRIDE=Fusion
 TERMINAL=foot
 BROWSER=brave-origin
 EDITOR=vim
