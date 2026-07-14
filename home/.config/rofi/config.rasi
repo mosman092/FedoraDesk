@@ -10,7 +10,7 @@ configuration {
     window-format:       "{c}   {t}";
 
     hover-select:    true;
-    click-to-exit:   false;
+    click-to-exit:   true;
     kb-cancel:       "Escape,MouseSecondary";
     me-select-entry: "";
     me-accept-entry: "MousePrimary";

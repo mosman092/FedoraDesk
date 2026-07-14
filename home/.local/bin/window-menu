@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+"""Window switcher: each open window as icon + title. Focuses the pick.
+Uses a generic app icon when the window's own icon can't be resolved."""
+import json, os, subprocess, sys
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
+
+DEFAULT_ICON = os.path.expanduser("~/.local/share/icons/window-fallback.svg")
+theme = Gtk.IconTheme.get_default()
+
+def icon_for(app):
+    for name in filter(None, (app, app.lower(), app.split(".")[-1].lower(), app.split("-")[0].lower())):
+        info = theme.lookup_icon(name, 48, 0)
+        if info and info.get_filename():
+            return info.get_filename()
+    return DEFAULT_ICON
+
+def walk(node, out):
+    for child in node.get("nodes", []) + node.get("floating_nodes", []):
+        if child.get("type") == "con" and child.get("name"):
+            app = child.get("app_id") or (child.get("window_properties") or {}).get("class") or ""
+            out.append((child["id"], app, child["name"]))
+        walk(child, out)
+
+tree = json.loads(subprocess.check_output(["swaymsg", "-t", "get_tree"]))
+wins = []
+walk(tree, wins)
+if not wins:
+    sys.exit(0)
+
+menu = "".join(f"{title}\0icon\x1f{icon_for(app)}\n" for _, app, title in wins)
+res = subprocess.run(
+    ["rofi", "-dmenu", "-i", "-format", "i", "-p", "Windows", "-show-icons"],
+    input=menu, capture_output=True, text=True)
+sel = res.stdout.strip()
+if sel.isdigit():
+    subprocess.run(["swaymsg", f"[con_id={wins[int(sel)][0]}] focus"])
