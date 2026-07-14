@@ -3,14 +3,9 @@ set -u
 dir="$HOME/.cache/clip-history"
 [ -d "$dir" ] || { notify-send "Clipboard" "History empty"; exit 0; }
 
-# Paste the CURRENT clipboard into the focused window by sending the paste
-# shortcut — NOT by typing the text out. Typing (wtype "text") replays every
-# character, so embedded newlines become real Enter presses: in a chat/box the
-# message fires mid-paste and the rest spills into the next line. Pasting from
-# the clipboard is one atomic event, so any length / any newlines land intact.
-# Terminals use Ctrl+Shift+V; everything else uses Ctrl+V — so detect the app.
+# send the paste shortcut, not the text — typing replays newlines as Enter
 paste_clipboard() {
-  sleep 0.15                      # let focus return to the app rofi covered
+  sleep 0.15
   local app=""
   if command -v jq >/dev/null 2>&1 && command -v swaymsg >/dev/null 2>&1; then
     app=$(swaymsg -t get_tree 2>/dev/null \
@@ -22,9 +17,9 @@ paste_clipboard() {
     foot|footclient|foot-server|alacritty|kitty|wezterm|org.wezfurlong.wezterm|\
     konsole|org.kde.konsole|xterm|st|urxvt|rxvt*|termite|tilix|terminator|\
     contour|xfce4-terminal|*-terminal|*terminal*|*term)
-      wtype -M ctrl -M shift -k v -m shift -m ctrl ;;   # Ctrl+Shift+V
+      wtype -M ctrl -M shift -k v -m shift -m ctrl ;;
     *)
-      wtype -M ctrl -k v -m ctrl ;;                     # Ctrl+V
+      wtype -M ctrl -k v -m ctrl ;;
   esac
 }
 
@@ -55,7 +50,7 @@ case "$f" in
     ;;
   txt_*)
     wl-copy < "$dir/$f" >/dev/null 2>&1
-    if [ "$rc" -eq 10 ]; then exit 0; fi     # Alt+Enter = copy only, no paste
+    if [ "$rc" -eq 10 ]; then exit 0; fi     # Alt+Enter = copy only
     paste_clipboard
     ;;
 esac

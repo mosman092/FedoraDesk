@@ -1,18 +1,13 @@
-# Personal bash config for Fedora Sericea (Atomic / Sway). Sourced by the stock
-# ~/.bashrc via ~/.bashrc.d/*, so it coexists with dev.sh and /etc/bashrc.
+# Personal bash config for Fedora Sericea (Atomic / Sway), sourced via ~/.bashrc.d/*
 
-# ── functions (safe in any shell) ────────────────────────────────────────────
-
-# clear screen + scrollback
 cls() { printf '\033c\033[3J'; }
 
-# system info via fastfetch
 info() {
   if command -v fastfetch >/dev/null; then fastfetch "$@"
   else echo "fastfetch not installed (it's layered by install.sh / 'pkg install fastfetch')."; fi
 }
 
-# host packages (rpm-ostree) — verb wrapper, Atomic-aware
+# host packages (rpm-ostree) — verb wrapper
 pkg() {
   case "${1:-status}" in
     install) rpm-ostree install "${@:2}" ;;
@@ -25,7 +20,6 @@ pkg() {
   esac
 }
 
-# flatpak apps — verb wrapper
 fp() {
   case "${1:-list}" in
     search)  flatpak search "${@:2}" ;;
@@ -43,14 +37,13 @@ clean() {
   sudo -v || return 1
   local _r m
   _step() { echo; echo -en "\033[1;34m$1\033[0m  [Y/n] "; read -r _r; [[ -z "$_r" || "$_r" =~ ^[Yy] ]]; }
-  # Pick a WRITABLE btrfs mount. On Atomic /sysroot is btrfs but mounted ro, so
-  # balance/scrub fail there; /var (or / on a plain install) is the same fs, rw.
+  # pick a writable btrfs mount — /sysroot is ro on Atomic, so balance/scrub need /var
   _btrfs() {
     local x opts
     for x in /var /var/home / /sysroot; do
       [ "$(findmnt -no FSTYPE "$x" 2>/dev/null)" = btrfs ] || continue
       opts=",$(findmnt -no OPTIONS "$x" 2>/dev/null),"
-      [ "${opts#*,ro,}" = "$opts" ] || continue   # skip read-only mounts
+      [ "${opts#*,ro,}" = "$opts" ] || continue
       echo "$x"; return 0
     done
     return 1
@@ -94,24 +87,21 @@ clean() {
   echo -e "\n\033[1;32mDone — system is lean.\033[0m"
 }
 
-# ── interactive-only bits ────────────────────────────────────────────────────
 if [[ $- == *i* ]]; then
   shopt -s autocd histappend checkwinsize
   HISTCONTROL=ignoreboth
   HISTSIZE=10000
   HISTFILESIZE=20000
 
-  # aliases
   alias ..='cd ..'  ...='cd ../..'  .3='cd ../../..'
   alias cp='cp -i'  mv='mv -i'  rm='rm -i'
   alias ls='ls --color=auto'  grep='grep --color=auto'
   alias ll='ls -alF'  la='ls -A'  l='ls -CF'
   alias tb='toolbox enter'
 
-  # prompt: cwd + git branch (no external theme)
+  # prompt: cwd + git branch
   _gitbranch() { git branch --show-current 2>/dev/null | sed 's/.*/ (&)/'; }
   PS1='\[\e[1;34m\]\w\[\e[0;35m\]$(_gitbranch)\[\e[0m\] \$ '
 
-  # greeting
   command -v fastfetch >/dev/null && fastfetch
 fi

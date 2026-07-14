@@ -1,9 +1,6 @@
 @import "shared"
 
-* { accent: @yellow; }
-
-mainbox  { width: 480px; }
-prompt   { enabled: false; }
+mainbox  { width: 460px; }
 entry    { placeholder: "Search emoji…"; }
 listview { lines: 10; }
 element-text { font: "Adwaita Sans 13"; }

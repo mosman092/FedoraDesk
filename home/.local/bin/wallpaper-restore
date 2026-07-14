@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Restore the saved wallpaper on Sway startup (falls back to the shipped default).
 set -u
 wp="$(cat "$HOME/.local/state/wallpaper" 2>/dev/null)"
 [ -f "$wp" ] || wp=/usr/share/backgrounds/default-dark.jxl

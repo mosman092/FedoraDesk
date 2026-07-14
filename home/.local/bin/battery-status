@@ -17,7 +17,7 @@ case "$tp" in
   *)                      prof="$tp";;
 esac
 
-# Font Awesome glyphs (generated at runtime so editors can't strip them)
+# glyphs generated at runtime so editors can't strip them
 bolt=$(printf ''); plug=$(printf '')
 i100=$(printf ''); i75=$(printf ''); i50=$(printf ''); i25=$(printf ''); i0=$(printf '')
 case "$status" in

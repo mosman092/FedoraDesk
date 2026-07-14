@@ -25,7 +25,7 @@ rpmostree_install() {
   fi
 }
 
-# run as your user, not root — symlinks must land in your $HOME, not /root
+# run as your user, not root — symlinks must land in $HOME
 if [ "$(id -u)" -eq 0 ]; then
   echo "Do NOT run as root. Run as your normal user: ./install.sh" >&2
   exit 1
@@ -55,8 +55,6 @@ declare -A PKG=(
   [tuned-adm]=tuned [fastfetch]=fastfetch [magick]=ImageMagick [jq]=jq
   [vim]=vim-enhanced [mousepad]=mousepad
 )
-# vim + mousepad are small, native editors, so they're layered on the host
-# directly (no toolbox). The dev toolbox below only carries git/gh for claude/agy.
 
 need=()
 for cmd in "${!PKG[@]}"; do
@@ -74,9 +72,7 @@ has_font "Noto Sans CJK"       || need+=(google-noto-sans-cjk-fonts)
 has_font "Noto Sans Bengali"   || need+=(google-noto-sans-bengali-fonts)
 has_font "Noto Sans Thai"      || need+=(google-noto-sans-thai-fonts)
 has_font "Liberation Sans"     || need+=(liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts)
-# Noto Nastaliq Urdu + DejaVu are NOT layered — they ship as plain .ttf files in
-# home/.local/share/fonts/ (symlinked into ~/.local/share/fonts, cached by
-# first-run's fc-cache). Keeps them out of every rpm-ostree deployment.
+# Noto Nastaliq Urdu + DejaVu ship as plain .ttf files, not layered
 
 if ! command -v brave-origin >/dev/null 2>&1; then
   say "Adding Brave repo (for brave-origin)…"
@@ -102,25 +98,12 @@ else
   say "All required packages + Brave Origin already present."
 fi
 
-# Firefox ships in the Sericea base image, but Brave is the daily driver and
-# Firefox is only needed for the occasional test — so drop it from the base and
-# use the (newer, Mozilla-official) Flatpak installed below instead. Idempotent:
-# only fires while firefox is still part of the base. Applies on the reboot.
-if command -v rpm-ostree >/dev/null && rpm -q firefox >/dev/null 2>&1; then
-  rmff=(firefox)
-  rpm -q firefox-langpacks >/dev/null 2>&1 && rmff+=(firefox-langpacks)
-  say "Removing base Firefox (${rmff[*]}) — using the Flatpak instead…"
-  sudo rpm-ostree override remove "${rmff[@]}" \
-    || warn "couldn't override-remove firefox — remove manually: rpm-ostree override remove ${rmff[*]}"
-fi
-
 if command -v flatpak >/dev/null; then
-  # Per-user Flathub only — no system-wide remote. Editors/tools are native rpm
-  # (vim + mousepad); Flatpak carries just the few apps not packaged for the host.
+  # per-user Flathub only — no system-wide remote
   flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-  say "Installing Flatpak apps (Chromium, Firefox, mpv, LocalSend, Obsidian)…"
+  say "Installing Flatpak apps (Chromium, mpv, LocalSend, Obsidian)…"
   flatpak install -y --user flathub \
-    org.chromium.Chromium org.mozilla.firefox io.mpv.Mpv \
+    org.chromium.Chromium io.mpv.Mpv \
     org.localsend.localsend_app md.obsidian.Obsidian \
     || warn "Flatpak install failed."
   flatpak override --user --filesystem=home io.mpv.Mpv 2>/dev/null || true
@@ -169,8 +152,6 @@ mkdir -p ~/.config/gtk-3.0 ~/.config/gtk-4.0
 if command -v gsettings >/dev/null; then
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark 2>/dev/null || true
   gsettings set org.gnome.desktop.interface gtk-theme Adwaita       2>/dev/null || true
-  # Mousepad coding defaults: Tomorrow Night Blue to match the default dark theme
-  # (theme-toggle flips it to Solarized Light in light mode), plus line numbers.
   msp() { gsettings set org.xfce.mousepad.preferences.view "$1" "$2" 2>/dev/null || true; }
   msp color-scheme "tomorrownightblue"
   msp show-line-numbers true
@@ -180,9 +161,6 @@ for v in gtk-3.0 gtk-4.0; do
   printf '[Settings]\ngtk-theme-name=Adwaita\ngtk-application-prefer-dark-theme=true\ngtk-icon-theme-name=Adwaita\n' > ~/.config/$v/settings.ini
 done
 printf 'gtk-theme-name="Adwaita"\n' > ~/.gtkrc-2.0
-
-# Default apps + font cache are applied on FIRST BOOT (~/.local/bin/first-run via
-# Sway exec) — nothing is live-applied here; the reboot brings everything up clean.
 
 [ -x "$HOME/.local/bin/apply-firefox-urdu" ] && "$HOME/.local/bin/apply-firefox-urdu" || true
 
@@ -216,7 +194,7 @@ else
   warn "firewall-cmd not found — skipping firewall hardening."
 fi
 
-# dev toolbox: git/gh (+ vim) for the claude/agy CLIs. vim itself is on the host.
+# dev toolbox: git/gh for the claude/agy CLIs
 if command -v toolbox >/dev/null; then
   say "Setting up the dev toolbox (git · gh)…"
   bash "$DOTFILES/toolbox-setup.sh" || warn "toolbox setup failed — run ./toolbox-setup.sh later"

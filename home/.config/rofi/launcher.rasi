@@ -1,31 +1,14 @@
 @import "shared"
 
-* { accent: @blue; }
-
-mainbox { width: 780px; padding: 20px; spacing: 16px; }
-
-prompt { enabled: false; }
-entry  { placeholder: "Search apps…"; }
-inputbar { padding: 12px 18px; }
+/* app launcher */
+mainbox { width: 560px; }
+entry   { placeholder: "Search apps…"; }
 
 listview {
-    columns:       4;
-    lines:         4;
-    fixed-columns: true;
-    spacing:       6px;
+    columns: 1;
+    lines:   9;
+    spacing: 1px;
 }
-
-element {
-    orientation:   vertical;
-    padding:       16px 8px;
-    spacing:       10px;
-    border-radius: 8px;
-}
-element-icon {
-    size:             3em;
-    horizontal-align: 0.5;
-}
-element-text {
-    horizontal-align: 0.5;
-    font:             "Adwaita Sans 10";
-}
+element      { padding: 8px 12px; spacing: 11px; }
+element-icon { size: 1.4em; }
+element-text { vertical-align: 0.5; }

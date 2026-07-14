@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# Rofi wallpaper picker with a thumbnail cache — Rofi loads small cached PNGs
-# instead of decoding full-size (and un-loadable .jxl) images every time.
-# `wallpaper-menu --warm` only builds the cache (run at login to pre-warm it).
+# Rofi wallpaper picker with a thumbnail cache; --warm only rebuilds the cache.
 set -u
 DIRS=("$HOME/Pictures/Wallpapers" "$HOME/Wallpapers" "/usr/share/backgrounds")
 CACHE="$HOME/.cache/wallpaper-thumbs"; mkdir -p "$CACHE"
@@ -19,7 +17,7 @@ fi
 
 thumb() { printf '%s/%s.png' "$CACHE" "$(printf '%s' "$1" | md5sum | cut -d' ' -f1)"; }
 
-# build any missing/stale thumbnails in parallel (magick reads jxl → png Rofi can show)
+# build missing/stale thumbnails in parallel
 if command -v magick >/dev/null; then
   for f in "${files[@]}"; do
     t=$(thumb "$f")

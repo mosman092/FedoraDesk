@@ -1,7 +1,7 @@
 {
     "layer": "top",
     "position": "bottom",
-    "height": 36,
+    "height": 46,
     "spacing": 0,
     "margin-bottom": 6,
     "margin-left": 8,
@@ -80,7 +80,7 @@
     },
     "tray": {
         "spacing": 10,
-        "icon-size": 18
+        "icon-size": 22
     },
     "cpu": {
         "on-click": "foot -e sh -c 'btop 2>/dev/null || top'",

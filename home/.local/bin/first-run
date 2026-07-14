@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Runs once on the first Sway login after install: applies the things install.sh
-# deliberately does NOT do live — the font cache and default-app/MIME setup.
+# runs once on first Sway login: font cache + default-app/MIME setup
 set -u
 m="$HOME/.local/state/dotfiles-firstrun"
 [ -e "$m" ] && exit 0

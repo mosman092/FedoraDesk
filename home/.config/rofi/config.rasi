@@ -1,22 +1,22 @@
 @import "shared"
 
 configuration {
-    modes:            "drun,window";
-    show-icons:       true;
-    icon-theme:       "Adwaita";
+    modes:               "drun,window";
+    show-icons:          true;
+    icon-theme:          "Adwaita";
     drun-display-format: "{name}";
-    display-drun:     "Apps";
-    display-window:   "Windows";
-    window-format:    "{c}   {t}";
+    display-drun:        "Apps";
+    display-window:      "Windows";
+    window-format:       "{c}   {t}";
 
-    /* mouse: click outside card or right-click closes — see shared.rasi */
-    hover-select:     true;
-    click-to-exit:    false;
-    kb-cancel:        "Escape,MouseSecondary";
-    me-select-entry:  "";
-    me-accept-entry:  "MousePrimary";
+    hover-select:    true;
+    click-to-exit:   false;
+    kb-cancel:       "Escape,MouseSecondary";
+    me-select-entry: "";
+    me-accept-entry: "MousePrimary";
 }
 
-mainbox  { width: 680px; }
-listview { lines: 6; }
-element-icon { size: 1.4em; }
+/* window switcher */
+mainbox  { width: 620px; }
+listview { lines: 8; }
+element-icon { size: 1.2em; }

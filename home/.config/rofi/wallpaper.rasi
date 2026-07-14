@@ -1,26 +1,25 @@
 @import "shared"
 
-* { accent: @mauve; }
-
-mainbox { width: 960px; }
+/* thumbnail grid */
+mainbox { width: 860px; }
 entry   { placeholder: "Search wallpapers…"; }
 
 listview {
     lines:        2;
     columns:      4;
-    spacing:      12px;
+    spacing:      10px;
     fixed-height: true;
 }
 element {
     orientation:   vertical;
-    padding:       8px;
+    padding:       6px;
     spacing:       6px;
-    border-radius: 8px;
+    border-radius: 2px;
     children:      [ "element-icon", "element-text" ];
 }
 element-icon {
-    size:             200px;
-    border-radius:    8px;
+    size:             170px;
+    border-radius:    2px;
     horizontal-align: 0.5;
 }
 element-text {

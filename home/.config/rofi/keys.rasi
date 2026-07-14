@@ -1,10 +1,7 @@
 @import "shared"
 
-* { accent: @teal; }
-
-mainbox  { width: 860px; }
-prompt   { enabled: false; }
+mainbox  { width: 720px; }
 entry    { placeholder: "Filter shortcuts…"; }
 listview { lines: 16; spacing: 1px; }
-element  { padding: 7px 12px; }
-element-text { font: "Adwaita Mono 11"; }
+element  { padding: 6px 10px; }
+element-text { font: "Adwaita Mono 10"; }

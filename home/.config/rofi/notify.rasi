@@ -1,0 +1,7 @@
+/* notification action menu (dunst) */
+@import "shared"
+
+mainbox  { width: 400px; }
+entry    { placeholder: "Filter…"; }
+listview { lines: 6; }
+element  { padding: 9px 12px; }
