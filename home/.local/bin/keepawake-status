@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 if [ -f "/run/user/$(id -u)/keepawake" ]; then
-  printf '{"text":"","class":"on","tooltip":"Keep-awake ON"}\n'
+  printf '{"text":"","class":"on","tooltip":"Keep-awake ON"}\n'
 else
-  printf '{"text":"","class":"off","tooltip":"Keep-awake OFF"}\n'
+  printf '{"text":"","class":"off","tooltip":"Keep-awake OFF"}\n'
 fi
