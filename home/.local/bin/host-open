@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Open a URL/file on the host. Used as $BROWSER inside the dev toolbox so links
+# (claude/agy logins, xdg-open, …) land in the host's default browser.
+setsid flatpak-spawn --host xdg-open "$@" >/dev/null 2>&1 &
+exit 0
