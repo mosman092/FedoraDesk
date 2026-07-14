@@ -23,8 +23,8 @@ This repo is the single source of truth. `install.sh` **symlinks** everything un
 1. Refuses to run as root; primes `sudo` once for the whole run.
 2. **Updates the base system** (`rpm-ostree upgrade`).
 3. Layers only the **missing** packages — including `fastfetch`, the editors **`vim`** + **`mousepad`**, and **Brave Origin** — in one `rpm-ostree` transaction (**not** live-applied; it comes up on the reboot).
-4. Removes **Firefox from the base image** (`rpm-ostree override remove`) — Brave is the daily driver; Firefox is used only for the odd test, so it comes from Flatpak instead.
-5. Installs a small set of **Flatpaks** (per-user Flathub only, **no** system-wide remote): Chromium, **Firefox**, **mpv**, **LocalSend**, **Obsidian** — just the apps not packaged natively (plus the home-filesystem / network / Wayland sandbox permissions they need).
+4. Keeps **Firefox native** (the base-image rpm) — Brave is the daily driver, but Firefox stays for the odd test.
+5. Installs a small set of **Flatpaks** (per-user Flathub only, **no** system-wide remote): Chromium, **mpv**, **LocalSend**, **Obsidian** — just the apps not packaged natively (plus the home-filesystem / network / Wayland sandbox permissions they need).
 6. Installs the self-contained CLI tools (Claude Code, Antigravity) into `~/.local`.
 7. Symlinks configs + scripts and writes the GTK dark theme.
 8. Sets the firewall rules and the Firefox Urdu font pref.
@@ -39,11 +39,11 @@ The host stays lean — heavier dev tooling lives in a `toolbox` container. `too
 
 | Toolbox | Contains | Reached via |
 |---------|----------|-------------|
-| **`dev`** | `git` + `gh` + `vim` | typing `claude` / `agy` |
+| **`dev`** | `git` + `gh` + `vim` + `wl-clipboard` + `wtype` | typing `claude` / `agy` |
 
-- **`dev`** — `~/.bashrc.d/dev.sh` makes the **CLIs** `claude` and `agy` (Antigravity CLI) run **inside `dev`**, so they use that container's `git`/`gh` (and `vim` as the commit editor). They're self-contained binaries in shared `~/.local`, so the same file runs on host or in the container — the wrapper just picks where.
+- **`dev`** — `~/.bashrc.d/dev.sh` makes the **CLIs** `claude` and `agy` (Antigravity CLI) run **inside `dev`**, so they use that container's `git`/`gh` (and `vim` as the commit editor). `wl-clipboard` + `wtype` are installed too, so clipboard (text **and** images) and simulated typing work from inside the container over the shared Wayland socket. They're self-contained binaries in shared `~/.local`, so the same file runs on host or in the container — the wrapper just picks where.
 - **Editor** — `vim` is small and dependency-free, so it's layered on the **host** directly (no toolbox, no wrapper). `vim file.txt` from your terminal, Thunar, or a Sway keybinding all Just Work.
-- **`antigravity`** is the **GUI IDE** (not a CLI) and launches on the **host** — it is *not* wrapped.
+- **`antigravity`** is the **GUI IDE** (not a CLI), launches on the **host**, and is the default `code_editor` for source files — it is *not* wrapped.
 - The container is a throwaway `dnf` playground (`toolbox rm dev` to reset) with **zero** cost to the host base image.
 
 ## What's inside
@@ -52,9 +52,9 @@ The host stays lean — heavier dev tooling lives in a `toolbox` container. `too
 |------|-------|
 | **Sway** | `sway/config.d/{appearance,keybindings,outputs}.conf`, `sway/environment` |
 | **Waybar** | `waybar/{config.jsonc,style.css}` — floating-islands bar |
-| **Rofi** | `rofi/*.rasi` — shared design system + launcher / clipboard / emoji / keys / power menus |
+| **Rofi** | `rofi/*.rasi` — one flat, minimal design system across launcher · clipboard · emoji · keys · power · window switcher · notification-action menus |
 | **Fonts** | `fontconfig/fonts.conf` — CJK / Thai / Bengali / Arabic / **Urdu Nastaliq** / emoji fallback. **Noto Nastaliq Urdu + DejaVu** ship as `.ttf` files under `.local/share/fonts/` (symlinked, not layered — keeps them out of every `rpm-ostree` deployment); the rest come from the base image. |
-| **Editors** | `vim` (terminal `EDITOR`, VS Code-style keys via `~/.vimrc`) + `mousepad` (GUI `text_editor`/`code_editor`, Solarized that follows dark/light) — both native rpm on the host |
+| **Editors** | `vim` (terminal `EDITOR`; VS Code-style keys + `habamax` truecolor theme via `~/.vimrc`) · `mousepad` (GUI `text_editor` for plain text) · **Antigravity** (`code_editor` for source files) |
 | **Apps** | `foot/foot.ini`, `dunst/dunstrc`, `ddcutil/ddcutilrc`, `default-apps.conf` |
 | **Scripts** | `~/.local/bin/*` |
 
@@ -69,6 +69,7 @@ The host stays lean — heavier dev tooling lives in a `toolbox` container. `too
 | `power-profile` · `battery-status` | Cycle power profiles (tuned); battery module shows the active one |
 | `brightness` | Internal (brightnessctl) **and** external (ddcutil) brightness in one command |
 | `power-menu` · `emoji-menu` · `keys-menu` | Power dialog · emoji picker · live keybinding cheatsheet |
+| `window-menu` · `notify-menu` | Window switcher (icon + title, generic-icon fallback) · renders dunst notification actions in Rofi |
 | `apply-defaults` | Sets MIME + app keybindings + env from `default-apps.conf` (Flatpak-aware) |
 | `apply-firefox-urdu` | Sets Firefox's Arabic-script font to Noto Nastaliq Urdu |
 | `install-antigravity-ide` | Fetches & installs the latest Antigravity IDE into `~/.local` |
@@ -82,7 +83,7 @@ The host stays lean — heavier dev tooling lives in a `toolbox` container. `too
 | `Super`+`Q` | Close window | `Super`+`Shift`+`F` | File manager |
 | `Super`+`Shift`+`V` | Clipboard history | `Super`+`.` | Emoji picker |
 | `Super`+`/` | Keybinding cheatsheet | `Super`+`Escape` | Power menu |
-| `Super`+`Shift`+`S` | Screenshot → clipboard | `Super`+`Shift`+`T` | Toggle dark/light |
+| `Super`+`Shift`+`S` | Screenshot → Pictures + clipboard | `Super`+`Shift`+`T` | Toggle dark/light |
 | `Super`+`N` | Toggle night light | Brightness keys | Internal + external |
 | **3-finger swipe** | Switch workspaces | **4-finger swipe** | Switch windows |
 
@@ -90,8 +91,8 @@ Touchpad: tap-to-click, natural scroll, disable-while-typing.
 
 ## Waybar
 
-**Left:** launcher · clock · workspaces · window title.
-**Right:** theme · night light · keep-awake · clipboard · volume · mic · network · CPU/RAM · temp · backlight · battery · tray · power.
+**Left:** power · clock · workspaces · window title.
+**Right:** theme · night light · keep-awake · clipboard · volume · mic · network · CPU/RAM · temp · backlight · battery · tray · launcher.
 
 - **Volume** — left-click mute · right-click `pavucontrol` (output devices) · scroll ±2% (cap 150%).
 - **Mic** — left-click mute · right-click `pavucontrol` (input devices) · scroll ±2% (cap 100%).
@@ -99,7 +100,7 @@ Touchpad: tap-to-click, natural scroll, disable-while-typing.
 
 ## Displays
 
-`sway/config.d/outputs.conf` is a commented, editable per-monitor layout — set each screen's **position**, **resolution**, **scale**, and **rotation**. Use `scale` to match physical size across displays of different DPI (a 24″ 1440p and a 14″ 1080p at the same scale render the bar at different physical sizes). Click the brightness % on the bar to open it; it re-applies on save.
+`sway/config.d/outputs.conf` is an editable per-monitor layout — set each screen's **position**, **resolution**, **scale**, and **rotation**. Use `scale` to match physical size across displays of different DPI (a 24″ 1440p and a 14″ 1080p at the same scale render the bar at different physical sizes). Click the brightness % on the bar to open it; it re-applies on save.
 
 ## Security
 
@@ -116,6 +117,8 @@ Check active rules with `sudo firewall-cmd --list-all`.
 - **GTK dark mode** — use the valid `Adwaita` theme + `prefer-dark`; `Adwaita-dark` isn't an installed theme and silently falls back to light.
 - **Waybar icons** — Font Awesome glyphs are stored as raw bytes; edit with a tool that preserves them (or use `\uXXXX` escapes).
 - **External brightness** — `ddcutil` needs the `i2c-dev` module, which its udev rule loads after the reboot.
+- **Notifications** — `dunst` is themed to match Rofi (flat, 2px corners, bottom-right above the bar); notifications carrying actions or URLs open them in Rofi via `notify-menu`.
+- **Click-to-close** — Rofi menus close on `Escape`, right-click, or pressing the same shortcut again. Click-*outside*-to-close is X11-only in Rofi and does not work under Wayland.
 
 ## License
 
