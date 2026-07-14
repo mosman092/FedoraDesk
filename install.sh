@@ -72,6 +72,9 @@ has_font "Noto Sans CJK"       || need+=(google-noto-sans-cjk-fonts)
 has_font "Noto Sans Bengali"   || need+=(google-noto-sans-bengali-fonts)
 has_font "Noto Sans Thai"      || need+=(google-noto-sans-thai-fonts)
 has_font "Liberation Sans"     || need+=(liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts)
+# window-menu resolves icons via GTK's python bindings — no binary to detect
+python3 -c "import gi; gi.require_version('Gtk','3.0'); from gi.repository import Gtk" 2>/dev/null \
+  || need+=(python3-gobject gtk3)
 # Noto Nastaliq Urdu + DejaVu ship as plain .ttf files, not layered
 
 if ! command -v brave-origin >/dev/null 2>&1; then
