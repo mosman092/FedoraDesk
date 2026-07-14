@@ -76,12 +76,12 @@ element {
     border-radius: 2px;
     cursor:        pointer;
 }
-element normal    normal { text-color: @text;   }
-element alternate normal { text-color: @text;   }
-element normal    active { text-color: @accent; }
-element alternate active { text-color: @accent; }
-element normal    urgent { text-color: @red;    }
-element alternate urgent { text-color: @red;    }
+element normal    normal { background-color: transparent; text-color: @text;   }
+element alternate normal { background-color: transparent; text-color: @text;   }
+element normal    active { background-color: transparent; text-color: @accent; }
+element alternate active { background-color: transparent; text-color: @accent; }
+element normal    urgent { background-color: transparent; text-color: @red;    }
+element alternate urgent { background-color: transparent; text-color: @red;    }
 element selected  normal { background-color: @surface0; text-color: @text;   }
 element selected  active { background-color: @surface0; text-color: @accent; }
 element selected  urgent { background-color: @surface0; text-color: @red;    }
