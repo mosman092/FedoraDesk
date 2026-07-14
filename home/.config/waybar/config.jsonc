@@ -7,7 +7,7 @@
     "margin-left": 8,
     "margin-right": 8,
     "modules-left": [
-        "custom/launcher",
+        "custom/power",
         "clock",
         "sway/workspaces",
         "sway/mode",
@@ -28,7 +28,7 @@
         "backlight",
         "custom/battery",
         "tray",
-        "custom/power"
+        "custom/launcher"
     ],
     "custom/launcher": {
         "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>",
