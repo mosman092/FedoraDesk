@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""Window switcher: each open window as icon + title. Focuses the pick.
-Uses a generic app icon when the window's own icon can't be resolved."""
 import json, os, subprocess, sys
 import gi
 gi.require_version("Gtk", "3.0")

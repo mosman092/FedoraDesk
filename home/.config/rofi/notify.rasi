@@ -1,4 +1,3 @@
-/* notification action menu (dunst) */
 @import "shared"
 
 mainbox  { width: 400px; }

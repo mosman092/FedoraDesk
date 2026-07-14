@@ -1,6 +1,5 @@
 @import "shared"
 
-/* thumbnail grid */
 mainbox { width: 860px; }
 entry   { placeholder: "Search wallpapers…"; }
 

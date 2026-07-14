@@ -45,7 +45,6 @@
     min_icon_size = 32
     max_icon_size = 64
 
-    # rofi in dmenu mode, for notification action/URL menus
     dmenu = /home/mosman092/.local/bin/notify-menu
     browser = /usr/bin/xdg-open
 

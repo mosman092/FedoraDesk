@@ -1,6 +1,5 @@
 @import "shared"
 
-/* destructive menu — red accent */
 * { accent: @red; }
 
 mainbox { width: 300px; }

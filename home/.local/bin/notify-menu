@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# dunst notification-action menu (rofi, centered). dunst pipes lines like
-# "#Confirm (Bluetooth) [12,confirm]"; show a clean label but return the
-# original line unchanged so dunst still fires the right action.
 mapfile -t orig
 ((${#orig[@]})) || exit 0
 disp=()

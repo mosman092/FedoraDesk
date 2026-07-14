@@ -1,6 +1,5 @@
 @import "shared"
 
-/* app launcher */
 mainbox { width: 560px; }
 entry   { placeholder: "Search apps…"; }
 

@@ -1,8 +1,3 @@
 #!/usr/bin/env bash
-# Open a URL/file on the host. Used as $BROWSER inside the dev toolbox so links
-# (claude/agy logins, xdg-open, …) land in the host's default browser.
-# Uses `gio open`: the host's xdg-open falls back to a text-browser list when
-# XDG_CURRENT_DESKTOP is unset (as it is under flatpak-spawn), so it can't
-# launch the GUI browser — gio honours the default-app registry directly.
 setsid flatpak-spawn --host gio open "$@" >/dev/null 2>&1 &
 exit 0
