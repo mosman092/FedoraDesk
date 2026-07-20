@@ -15,4 +15,5 @@ if command -v toolbox >/dev/null 2>&1; then
   }
   claude() { _run_dev claude "$@"; }
   agy()    { _run_dev agy "$@"; }
+  codex()  { _run_dev codex "$@"; }
 fi

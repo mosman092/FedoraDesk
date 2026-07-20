@@ -39,9 +39,9 @@ The host stays lean — heavier dev tooling lives in a `toolbox` container. `too
 
 | Toolbox | Contains | Reached via |
 |---------|----------|-------------|
-| **`dev`** | `git` + `gh` + `vim` + `wl-clipboard` + `wtype` | typing `claude` / `agy` |
+| **`dev`** | `git` + `gh` + `vim` + `wl-clipboard` + `wtype` | typing `claude` / `agy` / `codex` |
 
-- **`dev`** — `~/.bashrc.d/dev.sh` makes the **CLIs** `claude` and `agy` (Antigravity CLI) run **inside `dev`**, so they use that container's `git`/`gh` (and `vim` as the commit editor). `wl-clipboard` + `wtype` are installed too, so clipboard (text **and** images) and simulated typing work from inside the container over the shared Wayland socket. They're self-contained binaries in shared `~/.local`, so the same file runs on host or in the container — the wrapper just picks where.
+- **`dev`** — `~/.bashrc.d/dev.sh` makes the **CLIs** `claude`, `agy` (Antigravity CLI), and `codex` run **inside `dev`**, so they use that container's `git`/`gh` (and `vim` as the commit editor). `wl-clipboard` + `wtype` are installed too, so clipboard (text **and** images) and simulated typing work from inside the container over the shared Wayland socket. They're self-contained binaries in shared `~/.local`, so the same file runs on host or in the container — the wrapper just picks where.
 - **Editor** — `vim` is small and dependency-free, so it's layered on the **host** directly (no toolbox, no wrapper). `vim file.txt` from your terminal, Thunar, or a Sway keybinding all Just Work.
 - **`antigravity`** is the **GUI IDE** (not a CLI), launches on the **host**, and is the default `code_editor` for source files — it is *not* wrapped.
 - The container is a throwaway `dnf` playground (`toolbox rm dev` to reset) with **zero** cost to the host base image.

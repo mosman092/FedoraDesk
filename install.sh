@@ -170,6 +170,12 @@ else
   say "Installing Claude Code…"
   curl -fsSL https://claude.ai/install.sh | bash || warn "Claude Code install failed."
 fi
+if command -v codex >/dev/null 2>&1; then
+  say "Codex CLI already installed."
+else
+  say "Installing Codex CLI…"
+  curl -fsSL https://chatgpt.com/codex/install.sh | sh || warn "Codex CLI install failed."
+fi
 if command -v agy >/dev/null 2>&1 || command -v antigravity >/dev/null 2>&1; then
   say "Antigravity CLI already installed."
 else
