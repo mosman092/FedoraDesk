@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Toggle the laptop fan between automatic and 100% (nbfc-linux).
+tag=string:x-dunst-stack-tag:fan
+
+if ! nbfc status >/dev/null 2>&1; then
+  notify-send -h "$tag" "Fan" "nbfc service not running"
+  exit 1
+fi
+
+if nbfc status 2>/dev/null | grep -q 'Auto Control Enabled *: *true'; then
+  if nbfc set -s 100 >/dev/null 2>&1; then
+    notify-send -h "$tag" "Fan" "100% speed"
+  else
+    notify-send -h "$tag" "Fan" "Unable to set 100% speed"
+    exit 1
+  fi
+else
+  if nbfc set --auto >/dev/null 2>&1; then
+    notify-send -h "$tag" "Fan" "Auto"
+  else
+    notify-send -h "$tag" "Fan" "Unable to enable auto mode"
+    exit 1
+  fi
+fi

@@ -35,7 +35,6 @@ window#waybar {
 }
 
 #custom-launcher,
-#custom-clipboard,
 #custom-keybinds,
 #custom-emoji,
 #custom-theme,
@@ -57,6 +56,7 @@ window#waybar {
     background: alpha(@base, 0.92);
     border: 1px solid alpha(@surface1, 0.5);
     border-radius: 10px;
+    min-height: 22px;
     padding: 5px 13px;
     margin: 4px 3px;
     color: @text;
@@ -67,8 +67,8 @@ window#waybar {
     background: alpha(@blue, 0.92);
     border-color: transparent;
     color: @crust;
-    font-size: 17px;
-    padding: 5px 15px;
+    font-size: 16px;
+    padding: 5px 16px;
     margin-right: 0;
 }
 #custom-launcher:hover { background: @lavender; }
@@ -116,12 +116,10 @@ window#waybar.empty #window { margin: 0; padding: 0; }
 #custom-emoji:hover { background: alpha(@yellow, 0.25); }
 #custom-theme { color: @lavender; font-size: 16px; }
 #custom-theme:hover { background: alpha(@lavender, 0.25); }
-#custom-clipboard { color: @mauve; font-size: 16px; }
-#custom-clipboard:hover { background: alpha(@mauve, 0.25); }
 #custom-nightlight { color: @subtext; font-size: 16px; }
 #custom-nightlight.on { color: @peach; border-color: alpha(@peach, 0.6); }
 #custom-nightlight:hover { background: alpha(@peach, 0.25); }
-#custom-keepawake { color: @subtext; }
+#custom-keepawake { color: @subtext; font-size: 16px; }
 #custom-keepawake.on { color: @peach; border-color: alpha(@peach, 0.6); }
 
 #cpu         { color: @peach; }
@@ -141,7 +139,7 @@ window#waybar.empty #window { margin: 0; padding: 0; }
 #battery.critical, #custom-battery.critical { color: @red; border-color: @red; }
 #battery.charging, #custom-battery.charging { color: @green; }
 
-#tray { padding: 3px 10px; }
+#tray { padding: 5px 10px; }
 
 #custom-power {
     background: alpha(@red, 0.92);

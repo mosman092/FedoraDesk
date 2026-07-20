@@ -70,6 +70,7 @@ The host stays lean — heavier dev tooling lives in a `toolbox` container. `too
 | `brightness` | Internal (brightnessctl) **and** external (ddcutil) brightness in one command |
 | `power-menu` · `emoji-menu` · `keys-menu` | Power dialog · emoji picker · live keybinding cheatsheet |
 | `window-menu` · `notify-menu` | Window switcher (icon + title, generic-icon fallback) · renders dunst notification actions in Rofi |
+| `fan-toggle` | Toggles nbfc laptop fan control between automatic and 100% |
 | `apply-defaults` | Sets MIME + app keybindings + env from `default-apps.conf` (Flatpak-aware) |
 | `apply-firefox-urdu` | Sets Firefox's Arabic-script font to Noto Nastaliq Urdu |
 | `install-antigravity-ide` | Fetches & installs the latest Antigravity IDE into `~/.local` |
@@ -85,6 +86,7 @@ The host stays lean — heavier dev tooling lives in a `toolbox` container. `too
 | `Super`+`/` | Keybinding cheatsheet | `Super`+`Escape` | Power menu |
 | `Super`+`Shift`+`S` | Screenshot → Pictures + clipboard | `Super`+`Shift`+`T` | Toggle dark/light |
 | `Super`+`N` | Toggle night light | Brightness keys | Internal + external |
+| `Ctrl`+`Super`+`F` | Toggle fan: 100% ↔ auto | | |
 | **3-finger swipe** | Switch workspaces | **4-finger swipe** | Switch windows |
 
 Touchpad: tap-to-click, natural scroll, disable-while-typing.
@@ -92,7 +94,7 @@ Touchpad: tap-to-click, natural scroll, disable-while-typing.
 ## Waybar
 
 **Left:** power · clock · workspaces · window title.
-**Right:** theme · night light · keep-awake · clipboard · volume · mic · network · CPU/RAM · temp · backlight · battery · tray · launcher.
+**Right:** theme · night light · keep-awake · volume · mic · network · CPU/RAM · temp · backlight · battery · tray · launcher.
 
 - **Volume** — left-click mute · right-click `pavucontrol` (output devices) · scroll ±2% (cap 150%).
 - **Mic** — left-click mute · right-click `pavucontrol` (input devices) · scroll ±2% (cap 100%).

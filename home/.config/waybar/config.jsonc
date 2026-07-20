@@ -18,7 +18,6 @@
         "custom/theme",
         "custom/nightlight",
         "custom/keepawake",
-        "custom/clipboard",
         "pulseaudio",
         "pulseaudio#microphone",
         "network",
@@ -34,11 +33,6 @@
         "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>",
         "tooltip": false,
         "on-click": "~/.local/bin/rofi-toggle launcher rofi -show drun -theme ~/.config/rofi/launcher.rasi"
-    },
-    "custom/clipboard": {
-        "format": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>",
-        "tooltip-format": "Clipboard history",
-        "on-click": "~/.local/bin/rofi-toggle clipboard ~/.local/bin/clip-menu"
     },
     "custom/nightlight": {
         "exec": "~/.local/bin/nightlight-status",
@@ -142,7 +136,7 @@
     },
     "network": {
         "interval": 2,
-        "format-alt": "<span font_family='Font Awesome 6 Free' weight='heavy'></span> {bandwidthUpBytes}/s  <span font_family='Font Awesome 6 Free' weight='heavy'></span> {bandwidthDownBytes}/s",
+        "format-alt": "<span font_family='Font Awesome 6 Free' weight='heavy'></span> {bandwidthUpBytes}  <span font_family='Font Awesome 6 Free' weight='heavy'></span> {bandwidthDownBytes}",
         "format-wifi": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  {signalStrength}%",
         "format-ethernet": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  wired",
         "format-linked": "<span font_family='Font Awesome 6 Free' weight='heavy'></span>  no IP",

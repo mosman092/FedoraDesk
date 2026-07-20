@@ -10,7 +10,11 @@ warn() { printf '\033[1;33m!!\033[0m %s\n' "$*"; }
 rpmostree_install() {
   local pkgs=("$@") out rc miss keep p
   [ "${#pkgs[@]}" -gt 0 ] || return 0
-  out="$(sudo rpm-ostree install --idempotent -y "${pkgs[@]}" 2>&1)"; rc=$?
+  if out="$(sudo rpm-ostree install --idempotent -y "${pkgs[@]}" 2>&1)"; then
+    rc=0
+  else
+    rc=$?
+  fi
   printf '%s\n' "$out" | grep -vE '^$' | tail -3
   if [ $rc -ne 0 ]; then
     miss="$(printf '%s\n' "$out" | grep -oiE 'not found:.*' | sed 's/[^:]*: *//' | tr ',' ' ')"
@@ -18,9 +22,13 @@ rpmostree_install() {
       warn "not in repos, skipping: $miss"
       keep=(); for p in "${pkgs[@]}"; do case " $miss " in *" $p "*) ;; *) keep+=("$p");; esac; done
       [ "${#keep[@]}" -gt 0 ] || return 0
-      sudo rpm-ostree install --idempotent -y "${keep[@]}" || warn "layer failed — try manually: ${keep[*]}"
+      if ! sudo rpm-ostree install --idempotent -y "${keep[@]}"; then
+        warn "layer failed — try manually: ${keep[*]}"
+        return 1
+      fi
     else
       warn "layer failed — try manually: ${pkgs[*]}"
+      return 1
     fi
   fi
 }
@@ -87,18 +95,56 @@ if ! command -v brave-origin >/dev/null 2>&1; then
   fi
 fi
 
+# nbfc-linux (laptop fan control) — not in Fedora repos, so grab the GitHub RPM
+# and layer it in the SAME transaction as everything else below.
+# Ctrl+Super+f (~/.local/bin/fan-toggle) then toggles the fan between 100% and auto.
+nbfc_ready=false
+nbfc_requested=false
+if command -v nbfc >/dev/null 2>&1; then
+  nbfc_ready=true
+else
+  nbfc_tag="$(basename "$(curl -fsSLI -o /dev/null -w '%{url_effective}' \
+    https://github.com/nbfc-linux/nbfc-linux/releases/latest 2>/dev/null)")"
+  nbfc_fed="$(. /etc/os-release; echo "$VERSION_ID")"
+  nbfc_url="https://github.com/nbfc-linux/nbfc-linux/releases/download/${nbfc_tag}/fedora-${nbfc_fed}-nbfc-linux-${nbfc_tag}-1.x86_64.rpm"
+  nbfc_rpm="$(mktemp -d)/nbfc-linux.rpm"
+  if [ -n "$nbfc_tag" ] && curl -fsSL -o "$nbfc_rpm" "$nbfc_url"; then
+    say "Adding nbfc-linux ($nbfc_tag) to the layer…"
+    need+=("$nbfc_rpm")
+    nbfc_requested=true
+  else
+    warn "couldn't fetch nbfc-linux RPM ($nbfc_url) — skipping fan control"
+  fi
+fi
+
 if [ "${#need[@]}" -gt 0 ]; then
   mapfile -t need < <(printf '%s\n' "${need[@]}" | sort -u)
   say "Layering everything in one transaction (applies on reboot): ${need[*]}"
   if command -v rpm-ostree >/dev/null; then
-    rpmostree_install "${need[@]}"
+    if rpmostree_install "${need[@]}" && [ "$nbfc_requested" = true ]; then
+      nbfc_ready=true
+    fi
   elif command -v dnf >/dev/null; then
-    sudo dnf install -y "${need[@]}" || warn "install manually: ${need[*]}"
+    if sudo dnf install -y "${need[@]}"; then
+      [ "$nbfc_requested" = true ] && command -v nbfc >/dev/null 2>&1 && nbfc_ready=true
+    else
+      warn "install manually: ${need[*]}"
+    fi
   else
     warn "No rpm-ostree/dnf — install manually: ${need[*]}"
   fi
 else
   say "All required packages + Brave Origin already present."
+fi
+
+# nbfc fan profile + enable-on-boot (840 G5 shares the 850 G5 EC controller).
+# Layered unit lands on reboot; the wants-symlink enables it without needing it live yet.
+if [ "$nbfc_ready" = true ]; then
+  [ -f /etc/nbfc/nbfc.json ] || printf '{\n  "SelectedConfigId": "HP EliteBook 850 G5"\n}\n' \
+    | sudo install -DTm644 /dev/stdin /etc/nbfc/nbfc.json || warn "writing nbfc.json failed"
+  sudo mkdir -p /etc/systemd/system/multi-user.target.wants
+  sudo ln -sf /usr/lib/systemd/system/nbfc_service.service \
+    /etc/systemd/system/multi-user.target.wants/nbfc_service.service || warn "enabling nbfc_service failed"
 fi
 
 if command -v flatpak >/dev/null; then
